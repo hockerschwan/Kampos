@@ -1,0 +1,2 @@
+# Kampos
+WireSock client GUI
