@@ -1,0 +1,30 @@
+uses
+	CtrlLib;
+
+file
+	manifest.xml,
+	src/common.hpp,
+	src/Helper.cpp,
+	src/Helper.hpp,
+	src/icons.iml,
+	src/layouts.lay,
+	src/LogPage.cpp,
+	src/LogPage.hpp,
+	src/main.cpp,
+	src/MainWindow.cpp,
+	src/MainWindow.hpp,
+	src/RulesPage.cpp,
+	src/RulesPage.hpp,
+	src/SettingsPage.cpp,
+	src/SettingsPage.hpp,
+	src/TunnelsPage.cpp,
+	src/TunnelsPage.hpp;
+
+mainconfig
+	"" = "GUI WIN10 WIN32";
+
+custom(WIN32) "post-link",
+	"\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22621.0\\x64\\m"
+	"t.exe\" -manifest manifest.xml -outputresource:\"$(EXEPATH)\";1",
+	"";
+

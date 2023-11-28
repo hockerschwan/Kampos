@@ -1,0 +1,19 @@
+LAYOUT(MainWindowLayout, 600, 480)
+	ITEM(Upp::ColumnList, navigation_, LeftPosZ(0, 64).VSizePosZ(0, 0))
+	ITEM(Upp::ParentCtrl, content_, HSizePosZ(64, 0).VSizePosZ(0, 0))
+END_LAYOUT
+
+LAYOUT(TunnelsPageLayout, 400, 400)
+	ITEM(Upp::ColumnList, columnlistTunnels_, LeftPosZ(0, 160).VSizePosZ(0, 44))
+END_LAYOUT
+
+LAYOUT(RulesPageLayout, 400, 200)
+END_LAYOUT
+
+LAYOUT(LogPageLayout, 400, 200)
+	ITEM(Upp::ArrayCtrl, arrayCtrl_, Header(false).SetFrame(Upp::NullFrame()).HSizePosZ(0, 0).VSizePosZ(0, 36))
+END_LAYOUT
+
+LAYOUT(SettingsPageLayout, 400, 200)
+END_LAYOUT
+
