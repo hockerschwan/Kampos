@@ -1,5 +1,5 @@
-#ifndef _layouts_hpp_
-#define _layouts_hpp_
+#ifndef _common_hpp_
+#define _common_hpp_
 
 #include <CtrlLib/CtrlLib.h>
 

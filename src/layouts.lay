@@ -14,6 +14,22 @@ LAYOUT(LogPageLayout, 400, 200)
 	ITEM(Upp::ArrayCtrl, arrayCtrl_, Header(false).SetFrame(Upp::NullFrame()).HSizePosZ(0, 0).VSizePosZ(0, 36))
 END_LAYOUT
 
-LAYOUT(SettingsPageLayout, 400, 200)
+LAYOUT(SettingsPageLayout, 400, 360)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Application")).HSizePosZ(8, 8).TopPosZ(8, 96))
+	ITEM(Upp::Option, optionStartHidden_, NotNull(true).SetLabel(t_("Start hidden")).LeftPosZ(16, 160).TopPosZ(28, 16))
+	ITEM(Upp::Option, optionUseTask_, NotNull(true).SetLabel(t_("Start at login")).LeftPosZ(16, 160).TopPosZ(52, 16))
+	ITEM(Upp::StaticText, textLogLimit_, SetText(t_("Log page lines limit")).LeftPosZ(16, 160).TopPosZ(72, 20))
+	ITEM(Upp::EditIntSpin, spinLogLimit_, Min(0).Max(100000).NotNull(true).LeftPosZ(176, 80).TopPosZ(72, 20))
+	ITEM(Upp::LabelBox, dv___5, SetLabel(t_("WireSock")).HSizePosZ(8, 8).TopPosZ(112, 44))
+	ITEM(Upp::StaticText, textWSLogLevel_, SetText(t_("Log level")).LeftPosZ(16, 160).TopPosZ(128, 20))
+	ITEM(Upp::DropList, dropWSLogLevel_, NotNull(true).LeftPosZ(176, 100).TopPosZ(128, 20))
+	ITEM(Upp::Button, btnOpenSettingsFolder_, SetLabel(t_("Open settings folder")).LeftPosZ(12, 140).TopPosZ(168, 24))
+	ITEM(Upp::Button, btnExit_, SetLabel(t_("Exit")).RightPosZ(12, 32).TopPosZ(168, 20))
+	ITEM(Upp::LabelBox, dv___10, HSizePosZ(8, 8).TopPosZ(204, 1))
+	ITEM(Upp::LabelBox, dv___11, SetLabel(t_("About this application")).HSizePosZ(8, 8).TopPosZ(216, 120))
+	ITEM(Upp::ImageCtrl, imgAboutApp_, LeftPosZ(16, 36).TopPosZ(236, 36))
+	ITEM(Upp::StaticText, textAppName_, SetFont(Upp::StdFontZ(20).Bold()).HSizePosZ(60, 16).TopPosZ(240, 28))
+	ITEM(Upp::StaticText, textAppVersion_, HSizePosZ(20, 16).TopPosZ(280, 16))
+	ITEM(Upp::Button, btnOpenGithub_, SetLabel(t_("Open project page")).LeftPosZ(16, 124).TopPosZ(304, 24))
 END_LAYOUT
 

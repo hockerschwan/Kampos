@@ -2,8 +2,13 @@ uses
 	CtrlLib;
 
 file
+	app.rc,
+	icon.ico,
 	manifest.xml,
+	README.md,
 	src/common.hpp,
+	src/ConfigManager.cpp,
+	src/ConfigManager.hpp,
 	src/Helper.cpp,
 	src/Helper.hpp,
 	src/icons.iml,

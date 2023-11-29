@@ -1,3 +1,4 @@
+#include "ConfigManager.hpp"
 #include "MainWindow.hpp"
 #include <Core/Core.h>
 #include <shlobj.h>
@@ -5,6 +6,9 @@
 #define IMAGECLASS AppIcons
 #define IMAGEFILE <Kampos/src/icons.iml>
 #include <Draw/iml_source.h>
+
+std::unique_ptr<ConfigManager> gConfigManager;
+std::unique_ptr<MainWindow> gMainWindow;
 
 int IsAlreadyRunning()
 {
@@ -98,12 +102,19 @@ INITBLOCK
 		auto logName = GetHomeDirectory() << GetAppName() << "\\logs\\" << FormatTime(time, "YYYYMMDD-hhmmss") << ".log";
 		StdLogSetup(LOG_FILE | LOG_TIMESTAMP, logName);
 	}
+
+	gConfigManager = std::make_unique<ConfigManager>();
 }
 
 GUI_APP_MAIN
 {
-	auto w = new MainWindow();
-	w->OpenMain();
+	bool hide = ScanInt(gConfigManager->Load("StartHidden", "0")) == 1;
+
+	gMainWindow = std::make_unique<MainWindow>();
+	gMainWindow->OpenMain();
+	if(hide) {
+		gMainWindow->Hide();
+	}
 
 	Ctrl::EventLoop();
 }

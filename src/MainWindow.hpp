@@ -12,6 +12,8 @@ struct MainWindow : public WithMainWindowLayout<TopWindow> {
 public:
 	MainWindow();
 
+	void Exit() { ShowExitPrompt(); };
+
 private:
 	void ClearContent();
 	void SetContent();

@@ -1,10 +1,12 @@
 #include "Helper.hpp"
 #include "MainWindow.hpp"
 
+extern std::unique_ptr<MainWindow> gMainWindow;
+
 MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
-	Zoomable().Sizeable().Icon(AppIcons::IconX16, AppIcons::IconX24);
+	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
 	WhenClose = THISBACK(Hide);
 
 	navigation_.RowMode().NoRoundSize().AutoHideSb(true).ItemHeight(64).ItemWidth(65).SetDisplay(CenteredImageDisplay());
@@ -16,12 +18,7 @@ MainWindow::MainWindow()
 
 	tray_.WhenBar = THISBACK(ShowTrayMenu);
 	tray_.WhenLeftDown = THISBACK(ShowWindow);
-	tray_.Icon(AppIcons::IconX16);
-
-	LOG(Helper::RoamingPath());
-	LOG(Helper::AppPath());
-	LOG(Helper::LogsPath());
-	LOG(Helper::TunnelsPath());
+	tray_.Icon(AppIcons::Icon16);
 }
 
 void MainWindow::ClearContent()
@@ -55,7 +52,9 @@ void MainWindow::ShowExitPrompt()
 {
 	exitPromptShown_ = true;
 	if(PromptYesNo("Are you sure you want to exit?") == 1) {
-		delete this;
+		auto del = gMainWindow.get_deleter();
+		del(gMainWindow.release());
+		return;
 	}
 	exitPromptShown_ = false;
 }

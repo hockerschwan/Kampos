@@ -8,6 +8,9 @@ struct SettingsPage : WithSettingsPageLayout<ParentCtrl> {
 
 public:
 	SettingsPage();
+
+private:
+	Button::Style exitStyle_;
 };
 
 #endif
