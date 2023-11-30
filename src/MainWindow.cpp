@@ -1,6 +1,8 @@
 #include "Helper.hpp"
+#include "Logger.hpp"
 #include "MainWindow.hpp"
 
+extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<MainWindow> gMainWindow;
 
 MainWindow::MainWindow()
@@ -52,6 +54,7 @@ void MainWindow::ShowExitPrompt()
 {
 	exitPromptShown_ = true;
 	if(PromptYesNo("Are you sure you want to exit?") == 1) {
+		gLogger->Log("MainWindow destroyed.");
 		auto del = gMainWindow.get_deleter();
 		del(gMainWindow.release());
 		return;

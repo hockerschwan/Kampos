@@ -99,7 +99,7 @@ SettingsPage::SettingsPage()
 		btnExit_.SetStyle(exitStyle_);
 
 		auto w = Helper::CalcSize(btnExit_.GetLabel(), btnExit_.GetFont(), 60);
-		btnExit_.RightPosZ(btnExit_.GetPos().x.GetA(), w);
+		btnExit_.LeftPosZ(btnExit_.GetPos().x.GetA(), w);
 
 		btnExit_.WhenAction = [] { gMainWindow->Exit(); };
 	}

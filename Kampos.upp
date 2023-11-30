@@ -13,6 +13,8 @@ file
 	src/Helper.hpp,
 	src/icons.iml,
 	src/layouts.lay,
+	src/Logger.cpp,
+	src/Logger.hpp,
 	src/LogPage.cpp,
 	src/LogPage.hpp,
 	src/main.cpp,

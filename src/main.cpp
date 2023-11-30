@@ -1,4 +1,5 @@
 #include "ConfigManager.hpp"
+#include "Logger.hpp"
 #include "MainWindow.hpp"
 #include <Core/Core.h>
 #include <shlobj.h>
@@ -7,6 +8,7 @@
 #define IMAGEFILE <Kampos/src/icons.iml>
 #include <Draw/iml_source.h>
 
+std::unique_ptr<Logger> gLogger;
 std::unique_ptr<ConfigManager> gConfigManager;
 std::unique_ptr<MainWindow> gMainWindow;
 
@@ -38,38 +40,6 @@ int IsAlreadyRunning()
 	return 0;
 }
 
-int CountFiles(const String& path)
-{
-	FindFile find{};
-	find.Search(path);
-
-	auto count = 0;
-	while(true) {
-		auto file = find.GetName();
-		++count;
-		if(!find.Next()) {
-			break;
-		}
-	}
-	return count;
-}
-
-void RollLogFiles(byte num = 10)
-{
-	auto logDir = GetHomeDirectory() << GetAppName() << "\\logs\\";
-	RealizeDirectory(logDir);
-
-	auto path = logDir + "*.log";
-	while(CountFiles(path) >= num) {
-		FindFile find(path);
-		if(!find.GetName().IsEmpty()) {
-			if(!FileDelete(find.GetPath())) {
-				++num;
-			}
-		}
-	}
-}
-
 INITBLOCK
 {
 	SetAppName("Kampos");
@@ -93,25 +63,19 @@ INITBLOCK
 		UseHomeDirectoryConfig(true);
 	}
 
-	{
-		RollLogFiles();
-
-		auto sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
-		auto time = TimeFromUTC(sec.count());
-		SetDateFormat("%1:04d-%2:02d-%3:02d");
-		auto logName = GetHomeDirectory() << GetAppName() << "\\logs\\" << FormatTime(time, "YYYYMMDD-hhmmss") << ".log";
-		StdLogSetup(LOG_FILE | LOG_TIMESTAMP, logName);
-	}
-
+	gLogger = std::make_unique<Logger>();
 	gConfigManager = std::make_unique<ConfigManager>();
 }
 
 GUI_APP_MAIN
 {
+	gLogger->Log("Application started.");
+
 	bool hide = ScanInt(gConfigManager->Load("StartHidden", "0")) == 1;
 
 	gMainWindow = std::make_unique<MainWindow>();
 	gMainWindow->OpenMain();
+	gLogger->Log("MainWindow opened.");
 	if(hide) {
 		gMainWindow->Hide();
 	}

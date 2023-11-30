@@ -34,3 +34,13 @@ RGBA Helper::GetAppVersion()
 	res.a = LOWORD(info->dwFileVersionLS);
 	return res;
 }
+
+const String Helper::GetTime()
+{
+	SYSTEMTIME t;
+	GetLocalTime(&t);
+
+	char buf[13] = {0};
+	snprintf(buf, 13, "%02d:%02d:%02d.%03d", t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+	return String(buf);
+}

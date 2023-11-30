@@ -1,4 +1,7 @@
 #include "ConfigManager.hpp"
+#include "Logger.hpp"
+
+extern std::unique_ptr<Logger> gLogger;
 
 ConfigManager::~ConfigManager()
 {
@@ -32,7 +35,7 @@ void ConfigManager::Store(const String& key, const Value& value)
 	auto ptr = config_.FindPtr(key);
 	if(ptr == Null) {
 		config_.Add(key, value.ToString());
-		LOG(String() << key << ", " << value);
+		gLogger->Log(String() << key << ", " << value);
 	}
 	else {
 		*ptr = value.ToString();
@@ -74,7 +77,7 @@ void ConfigManager::ManageTask(bool create)
 	String out{};
 	Sys(cmd, out);
 	out.Replace("\r\n", "");
-	LOG(out);
+	gLogger->Log(out);
 }
 
 bool ConfigManager::TaskExists()

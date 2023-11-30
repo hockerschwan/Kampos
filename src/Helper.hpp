@@ -20,6 +20,7 @@ public:
 
 	// other
 	static RGBA GetAppVersion();
+	static const String GetTime();
 };
 
 #endif
