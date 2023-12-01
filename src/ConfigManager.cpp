@@ -99,8 +99,6 @@ bool ConfigManager::TaskExists()
 
 void ConfigManager::LoadConfig()
 {
-	RealizeDirectory(Helper::TunnelsPath());
-
 	config_ = LoadIniFile(ConfigFile());
 
 	// add default values if missing

@@ -9,6 +9,12 @@ int Helper::CalcSize(const String& text, const Font& font, int minWidth)
 	return max(w, minWidth);
 }
 
+String Helper::TrimWhiteSpaces(const String& str)
+{
+	VectorMap<String, String> map{{" ", ""}, {"\t", ""}, {"\r", ""}, {"\n", ""}};
+	return Replace(str, map);
+}
+
 RGBA Helper::GetAppVersion()
 {
 	auto res = RGBA();

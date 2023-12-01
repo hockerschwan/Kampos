@@ -24,8 +24,11 @@ file
 	src/RulesPage.hpp,
 	src/SettingsPage.cpp,
 	src/SettingsPage.hpp,
+	src/TunnelsManager.cpp,
+	src/TunnelsManager.hpp,
 	src/TunnelsPage.cpp,
-	src/TunnelsPage.hpp;
+	src/TunnelsPage.hpp,
+	src/TunnelStructs.hpp;
 
 mainconfig
 	"" = "GUI WIN10 WIN32";

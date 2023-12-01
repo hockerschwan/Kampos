@@ -1,6 +1,7 @@
 #include "ConfigManager.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "TunnelsManager.hpp"
 #include <Core/Core.h>
 #include <shlobj.h>
 
@@ -10,6 +11,7 @@
 
 std::unique_ptr<Logger> gLogger;
 std::unique_ptr<ConfigManager> gConfigManager;
+std::unique_ptr<TunnelsManager> gTunnelsManager;
 std::unique_ptr<MainWindow> gMainWindow;
 
 int IsAlreadyRunning()
@@ -65,6 +67,7 @@ INITBLOCK
 
 	gLogger = std::make_unique<Logger>();
 	gConfigManager = std::make_unique<ConfigManager>();
+	gTunnelsManager = std::make_unique<TunnelsManager>();
 }
 
 GUI_APP_MAIN

@@ -4,7 +4,7 @@ LAYOUT(MainWindowLayout, 600, 480)
 END_LAYOUT
 
 LAYOUT(TunnelsPageLayout, 400, 400)
-	ITEM(Upp::ColumnList, columnlistTunnels_, LeftPosZ(0, 160).VSizePosZ(0, 44))
+	ITEM(Upp::ColumnList, clTunnels_, LeftPosZ(0, 160).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 200)
