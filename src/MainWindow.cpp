@@ -6,6 +6,11 @@ extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<MainWindow> gMainWindow;
 
 MainWindow::MainWindow()
+	: tunnelsPage_(MakeOne<TunnelsPage>())
+	, rulesPage_(MakeOne<RulesPage>())
+	, logPage_(MakeOne<LogPage>())
+	, settingsPage_(MakeOne<SettingsPage>())
+	, tray_(MakeOne<TrayIcon>())
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
@@ -18,9 +23,9 @@ MainWindow::MainWindow()
 	navigation_.Add(AppIcons::Settings(), true);
 	navigation_.WhenSel = THISBACK(SetContent);
 
-	tray_.WhenBar = THISBACK(ShowTrayMenu);
-	tray_.WhenLeftDown = THISBACK(ShowWindow);
-	tray_.Icon(AppIcons::Icon16);
+	tray_->WhenBar = THISBACK(ShowTrayMenu);
+	tray_->WhenLeftDown = THISBACK(ShowWindow);
+	tray_->Icon(AppIcons::Icon16);
 }
 
 void MainWindow::ClearContent()
@@ -36,16 +41,16 @@ void MainWindow::SetContent()
 
 	switch(navigation_.GetCursor()) {
 	case 0:
-		content_.Add(tunnelsPage_.SizePos());
+		content_.Add(tunnelsPage_->SizePos());
 		break;
 	case 1:
-		content_.Add(rulesPage_.SizePos());
+		content_.Add(rulesPage_->SizePos());
 		break;
 	case 2:
-		content_.Add(logPage_.SizePos());
+		content_.Add(logPage_->SizePos());
 		break;
 	case 3:
-		content_.Add(settingsPage_.SizePos());
+		content_.Add(settingsPage_->SizePos());
 		break;
 	}
 }
@@ -54,7 +59,19 @@ void MainWindow::ShowExitPrompt()
 {
 	exitPromptShown_ = true;
 	if(PromptYesNo("Are you sure you want to exit?") == 1) {
-		gLogger->Log("MainWindow destroyed.");
+		gLogger->Log("Shutting down...");
+		Hide();
+		ShutdownThreads();
+
+		tray_.Clear();
+		tunnelsPage_.Clear();
+		rulesPage_.Clear();
+		logPage_.Clear();
+		settingsPage_.Clear();
+
+		Sleep(100);
+
+		gLogger->Log("Destroying MainWindow...");
 		auto del = gMainWindow.get_deleter();
 		del(gMainWindow.release());
 		return;

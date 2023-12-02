@@ -9,15 +9,14 @@ struct LogPage : WithLogPageLayout<ParentCtrl> {
 
 public:
 	LogPage();
-	~LogPage() { thread_.Exit(); };
+	~LogPage() { Shutdown(); };
 
 private:
 	void Read();
 	void Append(const LogEntry& entry);
 
 	Thread thread_{};
-	ConditionVariable* cv_;
-	Mutex* mutex_;
+	Mutex mutex_{};
 };
 
 #endif

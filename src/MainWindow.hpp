@@ -21,11 +21,11 @@ private:
 	void ShowTrayMenu(Bar& bar);
 	void ShowWindow();
 
-	TunnelsPage tunnelsPage_;
-	RulesPage rulesPage_;
-	LogPage logPage_;
-	SettingsPage settingsPage_;
-	TrayIcon tray_;
+	One<TunnelsPage> tunnelsPage_;
+	One<RulesPage> rulesPage_;
+	One<LogPage> logPage_;
+	One<SettingsPage> settingsPage_;
+	One<TrayIcon> tray_;
 
 	bool exitPromptShown_ = false;
 };

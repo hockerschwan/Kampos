@@ -26,20 +26,24 @@ struct Logger {
 
 public:
 	Logger();
+	~Logger() { Log("Bye."); };
 
-	void Log(const Value& value);
+	void Log(const String& value);
+	void Log(const int& value) { Log(IntStr(value)); };
+	void Log(const int64& value) { Log(IntStr64(value)); };
+	void Log(const double& value) { Log(DblStr(value)); };
+
 	bool Read(LogEntry& out);
 
 	ConditionVariable& GetConditionVariable() { return cv_; };
-	Mutex& GetMutex() { return mutex_; };
 
 private:
 	int CountFiles(const String& path);
 	void RollLogFiles(byte num = 10);
 
-	BiArray<LogEntry> queue_;
-	ConditionVariable cv_;
-	Mutex mutex_;
+	BiArray<LogEntry> queue_{};
+	Mutex mutex_{};
+	ConditionVariable cv_{};
 };
 
 #endif

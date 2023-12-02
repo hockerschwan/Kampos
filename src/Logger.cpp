@@ -13,7 +13,7 @@ Logger::Logger()
 	queue_.Reserve(16);
 }
 
-void Logger::Log(const Value& value)
+void Logger::Log(const String& value)
 {
 	auto t = Helper::GetTime();
 	auto entry = LogEntry(t, value);
@@ -24,7 +24,9 @@ void Logger::Log(const Value& value)
 		Mutex::Lock _(mutex_);
 		queue_.AddTail(entry);
 	}
-	cv_.Signal();
+	if(!Thread::IsShutdownThreads()) {
+		cv_.Signal();
+	}
 }
 
 bool Logger::Read(LogEntry& out)

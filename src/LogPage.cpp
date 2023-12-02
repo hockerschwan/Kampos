@@ -24,15 +24,13 @@ LogPage::LogPage()
 		};
 	}
 
-	mutex_ = &gLogger->GetMutex();
-	cv_ = &gLogger->GetConditionVariable();
 	thread_.RunNice(THISFN(Read));
 }
 
 void LogPage::Read()
 {
-	while(true) {
-		cv_->Wait(*mutex_);
+	while(!IsShutdown() && !IsShutdownThreads()) {
+		gLogger->GetConditionVariable().Wait(mutex_);
 		while(true) {
 			LogEntry entry{};
 			if(!gLogger->Read(entry)) {
@@ -46,6 +44,10 @@ void LogPage::Read()
 
 void LogPage::Append(const LogEntry& entry)
 {
+	if(IsShutdown() || IsShutdownThreads()) {
+		return;
+	}
+
 	auto limit = ScanInt(gConfigManager->Load("LogDisplayLimit"));
 
 	EnterGuiMutex();
