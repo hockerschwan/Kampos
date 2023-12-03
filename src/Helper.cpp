@@ -9,15 +9,9 @@ int Helper::CalcSize(const String& text, const Font& font, int minWidth)
 	return max(w, minWidth);
 }
 
-String Helper::TrimWhiteSpaces(const String& str)
+Tuple4<int, int, int, int> Helper::GetAppVersion()
 {
-	VectorMap<String, String> map{{" ", ""}, {"\t", ""}, {"\r", ""}, {"\n", ""}};
-	return Replace(str, map);
-}
-
-RGBA Helper::GetAppVersion()
-{
-	auto res = RGBA();
+	Tuple4<int, int, int, int> res{};
 	auto path = GetExeFilePath().ToWString().ToStd();
 
 	DWORD _{};
@@ -34,10 +28,10 @@ RGBA Helper::GetAppVersion()
 		return res;
 	}
 
-	res.r = HIWORD(info->dwFileVersionMS);
-	res.g = LOWORD(info->dwFileVersionMS);
-	res.b = HIWORD(info->dwFileVersionLS);
-	res.a = LOWORD(info->dwFileVersionLS);
+	res.Set(0, HIWORD(info->dwFileVersionMS));
+	res.Set(1, LOWORD(info->dwFileVersionMS));
+	res.Set(2, HIWORD(info->dwFileVersionLS));
+	res.Set(3, LOWORD(info->dwFileVersionLS));
 	return res;
 }
 

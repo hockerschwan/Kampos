@@ -20,6 +20,7 @@ file
 	src/main.cpp,
 	src/MainWindow.cpp,
 	src/MainWindow.hpp,
+	src/NewNameDialog.hpp,
 	src/RulesPage.cpp,
 	src/RulesPage.hpp,
 	src/SettingsPage.cpp,

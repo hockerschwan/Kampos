@@ -18,22 +18,81 @@ const ArrayMap<Id, TunnelConfig> TunnelsManager::GetTunnels() const
 	return pick(cl);
 }
 
-const String TunnelsManager::GetName(const Id& id) const
+bool TunnelsManager::Add(const TunnelConfig& config)
 {
-	auto pos = tunnels_.Find(id);
-	if(pos < 0) {
-		return Null;
+	if(!SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", config.ToString())) {
+		gLogger->Log(String("AddTunnel failed: ") << config.Interface.Name);
+		return false;
 	}
-	return pick(clone(tunnels_[pos].Interface.Name));
+
+	ScanFiles();
+	return true;
+}
+
+bool TunnelsManager::Delete(const Id& uuid)
+{
+	// todo: do not delete currently used tunnel
+
+	auto& cfg = tunnels_.Get(uuid);
+	auto path = Helper::TunnelsPath() << cfg.Interface.Name << ".conf";
+	if(!FileExists(path)) {
+		gLogger->Log(String("Delete failed: ") << path << " does not exist.");
+		return false;
+	}
+
+	if(!FileDelete(path)) {
+		gLogger->Log(String("Delete failed: Could not delete ") << path);
+		return false;
+	}
+
+	ScanFiles();
+	return true;
+}
+
+bool TunnelsManager::Rename(const Id& uuid, const String& name)
+{
+	auto& cfg = tunnels_.Get(uuid);
+	auto oldName = cfg.Interface.Name;
+	auto oldPath = Helper::TunnelsPath() << oldName << ".conf";
+	if(!FileExists(oldPath)) {
+		gLogger->Log(String("Rename failed: ") << oldPath << " does not exist.");
+		return false;
+	}
+
+	cfg.Interface.Name = name;
+	auto path = Helper::TunnelsPath() << name << ".conf";
+	if(FileExists(path)) {
+		cfg.Interface.Name = oldName;
+		gLogger->Log(String("Rename failed: ") << path << " already exists.");
+		return false;
+	}
+
+	if(!FileDelete(oldPath)) {
+		cfg.Interface.Name = oldName;
+		gLogger->Log(String("Rename failed: Could not delete ") << oldPath);
+		return false;
+	}
+
+	auto res = SaveFile(path, cfg.ToString());
+	if(res) {
+		ScanFiles();
+	}
+	else {
+		cfg.Interface.Name = oldName;
+		gLogger->Log(String("Rename failed: Could not save ") << path);
+	}
+	return res;
 }
 
 void TunnelsManager::ScanFiles()
 {
+	tunnels_.Clear();
+
 	FindFile find{};
-	find.Search(Helper::TunnelsPath() + "*.conf");
+	find.Search(Helper::TunnelsPath() << "*.conf");
 
 	while(true) {
-		FileIn st(Helper::TunnelsPath() + find.GetName());
+		FileIn st(Helper::TunnelsPath() << find.GetName());
 		auto cfg = Parse(LoadStream(st));
 		tunnels_.Add(Id(cfg.Interface.UUID), pick(cfg));
 
@@ -41,6 +100,8 @@ void TunnelsManager::ScanFiles()
 			break;
 		}
 	}
+
+	Sort();
 }
 
 TunnelConfig TunnelsManager::Parse(const String& str)
@@ -53,7 +114,8 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 
 	String section{};
 	int peerIndex = -1;
-	for(String& line : Split(str, "\r\n")) {
+	for(String& line : Split(str, "\n")) {
+		line.Replace("\r", "");
 		if(line.IsEmpty()) {
 			continue;
 		}
@@ -65,7 +127,8 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 		}
 
 		// trim spaces on both ends
-		Helper::TrimWhiteSpaces(line);
+		line.TrimStart("#");
+		line = TrimBoth(line);
 
 		// new section starts
 		if(line.StartsWith("[") && line.EndsWith("]")) {
@@ -82,15 +145,15 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			continue;
 		}
 
-		auto key = ToLower(Helper::TrimWhiteSpaces(line.Left(posEq)));
-		auto value = Helper::TrimWhiteSpaces(line.Right(line.GetCount() - posEq - 1));
+		auto key = ToLower(TrimBoth(line.Left(posEq)));
+		auto value = TrimBoth(line.Right(line.GetCount() - posEq - 1));
 
 		if(section == "interface") {
 			auto& ifc = cfg.Interface;
 
 			if(key == "address") {
 				for(auto& addr : Split(value, ",")) {
-					addr = Helper::TrimWhiteSpaces(addr);
+					addr = TrimBoth(addr);
 					// todo: check validity
 					if(!addr.IsEmpty()) {
 						ifc.Address.Add(addr);
@@ -99,7 +162,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			}
 			else if(key == "dns") {
 				for(auto& addr : Split(value, ",")) {
-					addr = Helper::TrimWhiteSpaces(addr);
+					addr = TrimBoth(addr);
 					if(!addr.IsEmpty()) {
 						ifc.DNS.Add(addr);
 					}
@@ -114,13 +177,13 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			else if(key == "privatekey") {
 				ifc.PrivateKey = value;
 			}
-			else if(key == "#uuid") {
+			else if(key == "uuid") {
 				if(value.IsEmpty() || value == Helper::GetVoidUuid()) {
 					value = Helper::GetNewUuid();
 				}
 				ifc.UUID = Id(value);
 			}
-			else if(key == "#name") {
+			else if(key == "name") {
 				ifc.Name = value;
 			}
 		}
@@ -129,7 +192,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 
 			if(key == "allowedapps") {
 				for(auto& app : Split(value, ",")) {
-					app = Helper::TrimWhiteSpaces(app);
+					app = TrimBoth(app);
 					if(!app.IsEmpty()) {
 						peer.AllowedApps.Add(app);
 					}
@@ -137,7 +200,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			}
 			else if(key == "allowedips") {
 				for(auto& addr : Split(value, ",")) {
-					addr = Helper::TrimWhiteSpaces(addr);
+					addr = TrimBoth(addr);
 					if(!addr.IsEmpty()) {
 						peer.AllowedIPs.Add(addr);
 					}
@@ -145,7 +208,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			}
 			else if(key == "disallowedapps") {
 				for(auto& app : Split(value, ",")) {
-					app = Helper::TrimWhiteSpaces(app);
+					app = TrimBoth(app);
 					if(!app.IsEmpty()) {
 						peer.DisallowedApps.Add(app);
 					}
@@ -153,7 +216,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			}
 			else if(key == "disallowedips") {
 				for(auto& addr : Split(value, ",")) {
-					addr = Helper::TrimWhiteSpaces(addr);
+					addr = TrimBoth(addr);
 					if(!addr.IsEmpty()) {
 						peer.DisallowedIPs.Add(addr);
 					}
@@ -174,7 +237,7 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 			else if(key == "publickey") {
 				peer.PublicKey = value;
 			}
-			else if(key == "#name") {
+			else if(key == "name") {
 				peer.Name = value;
 			}
 		}
@@ -186,4 +249,3 @@ TunnelConfig TunnelsManager::Parse(const String& str)
 
 	return cfg;
 }
-

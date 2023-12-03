@@ -11,11 +11,15 @@ public:
 	TunnelsManager();
 
 	const ArrayMap<Id, TunnelConfig> GetTunnels() const;
-	const String GetName(const Id& id) const;
+
+	bool Add(const TunnelConfig& config);
+	bool Delete(const Id& uuid);
+	bool Rename(const Id& uuid, const String& name);
 
 private:
 	void ScanFiles();
 	TunnelConfig Parse(const String& str);
+	void Sort() { StableSortByValue(tunnels_); };
 
 	ArrayMap<Id, TunnelConfig> tunnels_{};
 };

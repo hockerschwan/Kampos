@@ -4,7 +4,7 @@ LAYOUT(MainWindowLayout, 600, 480)
 END_LAYOUT
 
 LAYOUT(TunnelsPageLayout, 400, 400)
-	ITEM(Upp::ColumnList, clTunnels_, LeftPosZ(0, 160).VSizePosZ(0, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 160).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 200)
@@ -31,5 +31,11 @@ LAYOUT(SettingsPageLayout, 400, 400)
 	ITEM(Upp::StaticText, textAppVersion_, HSizePosZ(20, 16).TopPosZ(280, 16))
 	ITEM(Upp::Button, btnOpenGithub_, SetLabel(t_("Open project page")).LeftPosZ(16, 124).TopPosZ(304, 24))
 	ITEM(Upp::Button, btnExit_, SetLabel(t_("Exit")).LeftPosZ(16, 32).TopPosZ(348, 20))
+END_LAYOUT
+
+LAYOUT(NewNameDialogLayout, 240, 72)
+	ITEM(Upp::EditString, text, NotNull(true).HSizePosZ(8, 8).TopPosZ(8, 20))
+	ITEM(Upp::Button, ok, SetLabel(t_("OK")).LeftPosZ(8, 80).BottomPosZ(8, 24))
+	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).RightPosZ(8, 80).BottomPosZ(8, 24))
 END_LAYOUT
 

@@ -22,7 +22,7 @@ SettingsPage::SettingsPage()
 	{
 		optionStartHidden_.Set(ScanInt(gConfigManager->Load("StartHidden", "0")));
 		optionStartHidden_.WhenAction = [&] { gConfigManager->Store("StartHidden", optionStartHidden_.Get()); };
-		auto w = Helper::CalcSize(optionStartHidden_.GetLabel(), optionStartHidden_.GetFont()) + 16;
+		auto w = Helper::CalcSize(optionStartHidden_.GetLabel(), optionStartHidden_.GetFont()) + Zx(15);
 		optionStartHidden_.LeftPosZ(optionStartHidden_.GetPos().x.GetA(), w);
 	}
 
@@ -36,13 +36,13 @@ SettingsPage::SettingsPage()
 				optionUseTask_.Set(b);
 			}
 		};
-		auto w = Helper::CalcSize(optionUseTask_.GetLabel(), optionUseTask_.GetFont()) + 16;
+		auto w = Helper::CalcSize(optionUseTask_.GetLabel(), optionUseTask_.GetFont()) + Zx(15);
 		optionUseTask_.LeftPosZ(optionUseTask_.GetPos().x.GetA(), w);
 	}
 
 	{
 		auto wTxt = Helper::CalcSize(textLogLimit_.GetText(), textLogLimit_.GetFont());
-		textLogLimit_.LeftPosZ(textLogLimit_.GetPos().x.GetA(), wTxt + 8);
+		textLogLimit_.LeftPosZ(textLogLimit_.GetPos().x.GetA(), wTxt + Zx(8));
 
 		spinLogLimit_.LeftPosZ(textLogLimit_.GetPos().x.GetA() + textLogLimit_.GetSize().cx, spinLogLimit_.GetSize().cx);
 		spinLogLimit_.SetText(
@@ -55,7 +55,7 @@ SettingsPage::SettingsPage()
 
 	{
 		auto wTxt = Helper::CalcSize(textWSLogLevel_.GetText(), textWSLogLevel_.GetFont());
-		textWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA(), wTxt + 8);
+		textWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA(), wTxt + Zx(8));
 
 		dropWSLogLevel_.Add("none", "None");
 		dropWSLogLevel_.Add("info", "Info");
@@ -70,7 +70,7 @@ SettingsPage::SettingsPage()
 			auto w = Helper::CalcSize(text, GetStdFont());
 			wMax = max(wMax, w);
 		}
-		dropWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA() + textWSLogLevel_.GetSize().cx, wMax + 20);
+		dropWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA() + textWSLogLevel_.GetSize().cx, wMax + Zx(19));
 
 		dropWSLogLevel_.WhenAction = [&] {
 			gConfigManager->Store("WireSockLogLevel", dropWSLogLevel_.GetKey(dropWSLogLevel_.GetIndex()));
@@ -78,9 +78,9 @@ SettingsPage::SettingsPage()
 	}
 
 	{
-		btnOpenSettingsFolder_.SetImage(Rescale(AppIcons::Folder, 16, 16));
+		btnOpenSettingsFolder_.SetImage(Rescale(AppIcons::Folder(), Zx(15), Zx(15))); // 16 @100%
 		auto w = Helper::CalcSize(btnOpenSettingsFolder_.GetLabel(), btnOpenSettingsFolder_.GetFont());
-		btnOpenSettingsFolder_.LeftPosZ(btnOpenSettingsFolder_.GetPos().x.GetA(), w + 32);
+		btnOpenSettingsFolder_.LeftPosZ(btnOpenSettingsFolder_.GetPos().x.GetA(), w + Zx(30));
 
 		btnOpenSettingsFolder_.WhenAction = [] {
 			auto path = (GetConfigFolder() << "\\").ToWString().ToStd();
@@ -98,23 +98,24 @@ SettingsPage::SettingsPage()
 		exitStyle_ = ExitBtnStyle();
 		btnExit_.SetStyle(exitStyle_);
 
-		auto w = Helper::CalcSize(btnExit_.GetLabel(), btnExit_.GetFont(), 60);
+		auto w = Helper::CalcSize(btnExit_.GetLabel(), btnExit_.GetFont(), Zx(56));
 		btnExit_.LeftPosZ(btnExit_.GetPos().x.GetA(), w);
 
 		btnExit_.WhenAction = [] { gMainWindow->Exit(); };
 	}
 
 	{
-		imgAboutApp_.SetImage(Rescale(AppIcons::Icon64, 36, 36));
+		imgAboutApp_.SetImage(Rescale(AppIcons::Icon64, Zx(34), Zx(34))); // 36 @100%
 
 		textAppName_.SetText(GetAppName());
 
 		auto ver = Helper::GetAppVersion();
-		textAppVersion_.SetText(String("Version ") << IntStr(ver.r) << "." << IntStr(ver.g) << "." << IntStr(ver.b));
+		textAppVersion_.SetText(String("Version ")
+		                        << IntStr(ver.Get(0)) << "." << IntStr(ver.Get(1)) << "." << IntStr(ver.Get(2)));
 
-		btnOpenGithub_.SetImage(AppIcons::GitHub);
+		btnOpenGithub_.SetImage(Rescale(AppIcons::GitHub(), Zx(15), Zx(15)));
 		auto w = Helper::CalcSize(btnOpenGithub_.GetLabel(), btnOpenGithub_.GetFont());
-		btnOpenGithub_.LeftPosZ(btnOpenGithub_.GetPos().x.GetA(), w + 32);
+		btnOpenGithub_.LeftPosZ(btnOpenGithub_.GetPos().x.GetA(), w + Zx(30));
 		btnOpenGithub_.WhenAction = [] {
 			SHELLEXECUTEINFOW info{};
 			info.cbSize = sizeof(info);

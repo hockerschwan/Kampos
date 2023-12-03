@@ -21,15 +21,12 @@ public:
 	// ctrl
 	static int CalcSize(const String& text, const Font& font, int minWidth = 0);
 
-	// string
-	static String TrimWhiteSpaces(const String& str);
-
 	// uuid
 	static Id GetNewUuid() { return Id(uuids::to_string(uuids::uuid_system_generator{}())); };
 	static Id GetVoidUuid() { return Id(uuids::to_string(uuids::uuid())); };
 
 	// other
-	static RGBA GetAppVersion();
+	static Tuple4<int, int, int, int> GetAppVersion();
 	static const String GetTime();
 };
 

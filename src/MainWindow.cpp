@@ -16,11 +16,12 @@ MainWindow::MainWindow()
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
 	WhenClose = THISBACK(Hide);
 
-	navigation_.RowMode().NoRoundSize().AutoHideSb(true).ItemHeight(64).ItemWidth(65).SetDisplay(CenteredImageDisplay());
-	navigation_.Add(AppIcons::Tunnels(), true);
-	navigation_.Add(AppIcons::Rules(), true);
-	navigation_.Add(AppIcons::Log(), true);
-	navigation_.Add(AppIcons::Settings(), true);
+	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%
+	navigation_.RowMode().NoRoundSize().AutoHideSb(true).SetDisplay(CenteredImageDisplay());
+	navigation_.Add(Rescale(AppIcons::Tunnels(), Zx(30), Zx(30)), true); // 32 @100%
+	navigation_.Add(Rescale(AppIcons::Rules(), Zx(30), Zx(30)), true);
+	navigation_.Add(Rescale(AppIcons::Log(), Zx(30), Zx(30)), true);
+	navigation_.Add(Rescale(AppIcons::Settings(), Zx(30), Zx(30)), true);
 	navigation_.WhenSel = THISBACK(SetContent);
 
 	tray_->WhenBar = THISBACK(ShowTrayMenu);
