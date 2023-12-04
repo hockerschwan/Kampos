@@ -4,8 +4,7 @@
 #include "common.hpp"
 
 struct RulesPage : WithRulesPageLayout<ParentCtrl> {
-	typedef RulesPage CLASSNAME;
-
+public:
 	RulesPage();
 };
 

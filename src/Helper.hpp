@@ -10,8 +10,6 @@
 using namespace Upp;
 
 struct Helper {
-	typedef Helper CLASSNAME;
-
 public:
 	// path
 	static String LogsPath() { return RoamingPath() += "logs\\"; };

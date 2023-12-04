@@ -4,8 +4,6 @@
 #include "common.hpp"
 
 struct SettingsPage : WithSettingsPageLayout<ParentCtrl> {
-	typedef SettingsPage CLASSNAME;
-
 public:
 	SettingsPage();
 

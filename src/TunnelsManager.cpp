@@ -49,6 +49,38 @@ bool TunnelsManager::Delete(const Id& uuid)
 	return true;
 }
 
+bool TunnelsManager::Import(const Array<String>& paths)
+{
+	auto res = false;
+
+	for(const auto& path : paths) {
+		auto cfg = Parse(LoadFile(path));
+		if(cfg == TunnelConfig::GetVoid()) {
+			gLogger->Log(String("Import failed: Could not parse " << path));
+			continue;
+		}
+
+		if(cfg.Interface.Name.IsEmpty()) {
+			cfg.Interface.Name = cfg.Interface.UUID.ToString();
+		}
+
+		auto savePath = Helper::TunnelsPath() << cfg.Interface.Name << ".conf";
+		if(!SaveFile(savePath, cfg.ToString())) {
+			gLogger->Log(String("Import failed: ") << savePath);
+			continue;
+		}
+
+		gLogger->Log(String("Imported: ") << path << " as " << savePath);
+		res = true;
+	}
+
+	if(res) {
+		ScanFiles();
+	}
+
+	return res;
+}
+
 bool TunnelsManager::Rename(const Id& uuid, const String& name)
 {
 	auto& cfg = tunnels_.Get(uuid);
@@ -94,7 +126,9 @@ void TunnelsManager::ScanFiles()
 	while(true) {
 		FileIn st(Helper::TunnelsPath() << find.GetName());
 		auto cfg = Parse(LoadStream(st));
-		tunnels_.Add(Id(cfg.Interface.UUID), pick(cfg));
+		if(cfg != TunnelConfig::GetVoid()) {
+			tunnels_.Add(Id(cfg.Interface.UUID), pick(cfg));
+		}
 
 		if(!find.Next()) {
 			break;
@@ -104,7 +138,7 @@ void TunnelsManager::ScanFiles()
 	Sort();
 }
 
-TunnelConfig TunnelsManager::Parse(const String& str)
+TunnelConfig TunnelsManager::Parse(const String& str) const
 {
 	TunnelConfig cfg{};
 

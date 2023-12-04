@@ -14,7 +14,7 @@ MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
-	WhenClose = THISBACK(Hide);
+	WhenClose = [&] { Hide(); };
 
 	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%
 	navigation_.RowMode().NoRoundSize().AutoHideSb(true).SetDisplay(CenteredImageDisplay());
@@ -22,10 +22,10 @@ MainWindow::MainWindow()
 	navigation_.Add(Rescale(AppIcons::Rules(), Zx(30), Zx(30)), true);
 	navigation_.Add(Rescale(AppIcons::Log(), Zx(30), Zx(30)), true);
 	navigation_.Add(Rescale(AppIcons::Settings(), Zx(30), Zx(30)), true);
-	navigation_.WhenSel = THISBACK(SetContent);
+	navigation_.WhenSel = [&] { SetContent(); };
 
-	tray_->WhenBar = THISBACK(ShowTrayMenu);
-	tray_->WhenLeftDown = THISBACK(ShowWindow);
+	tray_->WhenBar = [&](Bar& bar) { ShowTrayMenu(bar); };
+	tray_->WhenLeftDown = [&] { ShowWindow(); };
 	tray_->Icon(AppIcons::Icon16);
 }
 
@@ -80,7 +80,10 @@ void MainWindow::ShowExitPrompt()
 	exitPromptShown_ = false;
 }
 
-void MainWindow::ShowTrayMenu(Bar& bar) { bar.Add("Exit", CtrlImg::remove, THISBACK(ShowExitPrompt)); }
+void MainWindow::ShowTrayMenu(Bar& bar)
+{
+	bar.Add("Exit", CtrlImg::remove, [&] { ShowExitPrompt(); });
+}
 
 void MainWindow::ShowWindow()
 {

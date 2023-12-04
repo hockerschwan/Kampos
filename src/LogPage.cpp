@@ -24,20 +24,22 @@ LogPage::LogPage()
 		};
 	}
 
-	thread_.RunNice(THISFN(Read));
+	thread_.RunNice([&] { Read(); });
 }
 
 void LogPage::Read()
 {
 	while(!IsShutdown() && !IsShutdownThreads()) {
-		gLogger->GetConditionVariable().Wait(mutex_);
+		gLogger->GetConditionVariable().Wait(mutex_, 1000);
 		while(true) {
 			LogEntry entry{};
-			if(!gLogger->Read(entry)) {
+			auto more = gLogger->Read(entry);
+			if(entry != LogEntry::GetVoid()) {
 				Append(entry);
+			}
+			if(!more) {
 				break;
 			}
-			Append(entry);
 		}
 	}
 }

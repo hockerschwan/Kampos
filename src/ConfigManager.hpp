@@ -5,8 +5,6 @@
 #include "common.hpp"
 
 struct ConfigManager {
-	typedef ConfigManager CLASSNAME;
-
 public:
 	ConfigManager() { LoadConfig(); };
 	~ConfigManager();

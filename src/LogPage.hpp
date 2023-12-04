@@ -5,8 +5,6 @@
 #include "common.hpp"
 
 struct LogPage : WithLogPageLayout<ParentCtrl> {
-	typedef LogPage CLASSNAME;
-
 public:
 	LogPage();
 	~LogPage() { Shutdown(); };

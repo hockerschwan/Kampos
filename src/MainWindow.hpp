@@ -7,8 +7,6 @@
 #include "TunnelsPage.hpp"
 
 struct MainWindow : public WithMainWindowLayout<TopWindow> {
-	typedef MainWindow CLASSNAME;
-
 public:
 	MainWindow();
 

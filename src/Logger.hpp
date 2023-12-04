@@ -19,11 +19,12 @@ struct LogEntry {
 	const String ToString() const { return String() << Timestamp << " " << Message; };
 
 	static LogEntry GetVoid() { return LogEntry{}; }
+
+	bool operator==(const LogEntry& rhs) const { return Timestamp == rhs.Timestamp && Message == rhs.Message; };
+	bool operator!=(const LogEntry& rhs) const { return !(*this == rhs); };
 };
 
 struct Logger {
-	typedef Logger CLASSNAME;
-
 public:
 	Logger();
 	~Logger() { Log("Bye."); };

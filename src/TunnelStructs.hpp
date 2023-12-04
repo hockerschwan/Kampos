@@ -40,6 +40,11 @@ public:
 		str << "\nMTU = " << MTU.ToString() << "\nPrivateKey = " << PrivateKey << "\n";
 		return str;
 	};
+
+	bool operator==(const TunnelInterface& rhs) const
+	{
+		return Address == rhs.Address && DNS == rhs.DNS && MTU == rhs.MTU && PrivateKey == rhs.PrivateKey;
+	};
 };
 
 class TunnelPeer : Moveable<TunnelPeer>, DeepCopyOption<TunnelPeer> {
@@ -95,6 +100,13 @@ public:
 		str << "\nPresharedKey = " << PresharedKey << "\nPublicKey = " << PublicKey << "\n";
 		return str;
 	};
+
+	bool operator==(const TunnelPeer& rhs) const
+	{
+		return AllowedApps == rhs.AllowedApps && AllowedIPs == rhs.AllowedIPs && DisallowedApps == rhs.DisallowedApps &&
+		       DisallowedIPs == rhs.DisallowedIPs && Endpoint == rhs.Endpoint && PersistentKeepalive == rhs.PersistentKeepalive &&
+		       PresharedKey == rhs.PresharedKey && PublicKey == rhs.PublicKey;
+	};
 };
 
 class TunnelConfig : Moveable<TunnelConfig>, DeepCopyOption<TunnelConfig> {
@@ -117,7 +129,13 @@ public:
 		return str;
 	};
 
+	static TunnelConfig GetVoid() { return pick(TunnelConfig()); };
+
 	bool operator<(const TunnelConfig& rhs) const { return ToLower(this->Interface.Name) < ToLower(rhs.Interface.Name); }
+
+	bool operator==(const TunnelConfig& rhs) const { return Interface == rhs.Interface && Peers == rhs.Peers; };
+
+	bool operator!=(const TunnelConfig& rhs) { return !(*this == rhs); };
 };
 
 #endif
