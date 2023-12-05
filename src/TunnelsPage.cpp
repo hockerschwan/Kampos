@@ -6,6 +6,7 @@ extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 
 TunnelsPage::TunnelsPage()
+	: editor_(MakeOne<TunnelEditor>())
 {
 	CtrlLayout(*this);
 
@@ -16,11 +17,23 @@ TunnelsPage::TunnelsPage()
 
 		array_.NoAutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zy(21)); // 24 @100%
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };
+		array_.WhenSel = [&] {
+			Id id{};
+			auto i = array_.GetCursor();
+			if(i >= 0) {
+				id = array_.Get(i, colId_).ToString();
+			}
+			SetContent(id);
+		};
+
 		ScanTunnels();
 		if(array_.GetCount() > 0) {
 			array_.SetCursor(0);
 		}
 	}
+
+	scroll_.scroll.y.AutoHide(false);
+	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
 }
 
 void TunnelsPage::Add()
@@ -176,6 +189,25 @@ void TunnelsPage::ScanTunnels()
 	}
 }
 
+void TunnelsPage::SetContent(const Id& uuid)
+{
+	if(uuid.ToString().IsEmpty()) {
+		scroll_.Hide();
+		gLogger->Log("Cleared");
+		return;
+	}
+
+	scroll_.Show();
+	scroll_.EnableScroll();
+
+	editor_->SetId(uuid);
+
+	scroll_.RemoveChild(editor_.Get());
+	scroll_.Add(editor_->HSizePosZ());
+	scroll_.AddPane(*editor_);
+	scroll_.scroll.y.ScrollInto(0);
+}
+
 void TunnelsPage::ShowMenu(Bar& bar)
 {
 	auto selected = array_.GetCursor() >= 0;
@@ -188,8 +220,9 @@ void TunnelsPage::ShowMenu(Bar& bar)
 
 	bar.Add("Add", Rescale(AppIcons::Add(), iconSize, iconSize), [&] { Add(); });
 	bar.Add("Import", Rescale(AppIcons::Folder(), iconSize, iconSize), [&] { Import(); });
-	bar.Separator();
-	bar.Add(selected, "Duplicate", [&, id] { Duplicate(Id(id)); });
+	bar.Add(selected, "Duplicate", Rescale(AppIcons::Copy(), iconSize, iconSize), [&, id] { Duplicate(Id(id)); });
 	bar.Add(selected, "Rename", Rescale(AppIcons::Pen(), iconSize, iconSize), [&, id] { Rename(Id(id)); });
 	bar.Add(selected, "Delete", Rescale(AppIcons::Bin(), iconSize, iconSize), [&, id] { Delete(Id(id)); });
+	// bar.Separator();
+	// bar.Add(selected, "Add peer", []{});
 }

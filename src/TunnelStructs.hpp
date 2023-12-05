@@ -1,7 +1,11 @@
 #ifndef _TunnelStructs_hpp_
 #define _TunnelStructs_hpp_
 
+#include "Helper.hpp"
+#include <Core/Core.h>
 #include <stduuid/uuid.h>
+
+using namespace Upp;
 
 class TunnelInterface : Moveable<TunnelInterface>, DeepCopyOption<TunnelInterface> {
 public:
@@ -10,7 +14,7 @@ public:
 	Value MTU = 0;
 	String PrivateKey{};
 
-	Id UUID = Id(Helper::GetVoidUuid()); // # UUID = 0000-0000-...
+	Id UUID = Id(Helper::GetVoidUuid()); // # UUID = 00000000-0000-...
 	String Name{};                       // # Name = tunnel1
 
 	TunnelInterface(){};

@@ -3,6 +3,9 @@
 
 #include <CtrlLib/CtrlLib.h>
 
+#include <AutoScroller/AutoScroller.h>
+#include <GridLayoutCtrl/GridLayoutCtrl.h>
+
 using namespace Upp;
 
 #define LAYOUTFILE <Kampos/src/layouts.lay>

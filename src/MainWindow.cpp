@@ -14,6 +14,7 @@ MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
+	SetMinSize(Zsz(720, 480));
 	WhenClose = [&] { Hide(); };
 
 	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%
@@ -29,16 +30,11 @@ MainWindow::MainWindow()
 	tray_->Icon(AppIcons::Icon16);
 }
 
-void MainWindow::ClearContent()
+void MainWindow::SetContent()
 {
 	while(content_.GetChildCount() > 0) {
 		content_.RemoveChild(content_.GetIndexChild(0));
 	}
-}
-
-void MainWindow::SetContent()
-{
-	ClearContent();
 
 	switch(navigation_.GetCursor()) {
 	case 0:
@@ -70,7 +66,9 @@ void MainWindow::ShowExitPrompt()
 		logPage_.Clear();
 		settingsPage_.Clear();
 
-		Sleep(100);
+		Thread t{};
+		t.Run([&] { t.Sleep(100); });
+		t.Wait();
 
 		gLogger->Log("Destroying MainWindow...");
 		auto del = gMainWindow.get_deleter();

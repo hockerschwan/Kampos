@@ -13,7 +13,6 @@ public:
 	void Exit() { ShowExitPrompt(); };
 
 private:
-	void ClearContent();
 	void SetContent();
 	void ShowExitPrompt();
 	void ShowTrayMenu(Bar& bar);

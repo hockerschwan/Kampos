@@ -16,7 +16,7 @@ LogPage::LogPage()
 		arrayCtrl_.HeaderTab(0).Fixed(w + 16);
 
 		arrayCtrl_.WhenBar = [&](Bar& bar) {
-			bar.Add("Copy", Upp::CtrlImg::copy(), [&] {
+			bar.Add("Copy", Rescale(AppIcons::Copy(), 16, 16), [&] {
 				auto t = arrayCtrl_.Get(arrayCtrl_.GetCursor(), 0);
 				auto m = arrayCtrl_.Get(arrayCtrl_.GetCursor(), 1);
 				AppendClipboardText(String(t) << " " << m);

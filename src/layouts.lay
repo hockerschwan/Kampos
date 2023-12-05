@@ -1,10 +1,11 @@
-LAYOUT(MainWindowLayout, 600, 480)
+LAYOUT(MainWindowLayout, 400, 300)
 	ITEM(Upp::ColumnList, navigation_, LeftPosZ(0, 64).VSizePosZ(0, 0))
 	ITEM(Upp::ParentCtrl, content_, HSizePosZ(64, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
-LAYOUT(TunnelsPageLayout, 400, 400)
-	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 160).VSizePosZ(0, 0))
+LAYOUT(TunnelsPageLayout, 400, 300)
+	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 140).VSizePosZ(0, -4))
+	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(140, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 200)
@@ -37,5 +38,42 @@ LAYOUT(NewNameDialogLayout, 240, 72)
 	ITEM(Upp::EditString, text, NotNull(true).HSizePosZ(8, 8).TopPosZ(8, 20))
 	ITEM(Upp::Button, ok, SetLabel(t_("OK")).LeftPosZ(8, 80).BottomPosZ(8, 24))
 	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).RightPosZ(8, 80).BottomPosZ(8, 24))
+END_LAYOUT
+
+LAYOUT(TunnelInterfaceEditorLayout, 500, 192)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Interface")).HSizePosZ(8, 8).TopPosZ(8, 180))
+	ITEM(Upp::StaticText, dv___1, SetText(t_("UUID")).LeftPosZ(16, 60).TopPosZ(28, 20))
+	ITEM(Upp::StaticText, textUUID_, SetText(t_("00000000-0000-0000-0000-000000000000")).HSizePosZ(76, 16).TopPosZ(28, 20))
+	ITEM(Upp::StaticText, dv___3, SetText(t_("MTU")).LeftPosZ(16, 60).TopPosZ(52, 20))
+	ITEM(Upp::EditIntSpin, spinMTU_, Min(0).Max(100000).MaxChars(6).LeftPosZ(76, 100).TopPosZ(52, 20))
+	ITEM(Upp::StaticText, dv___5, SetText(t_("PrivateKey")).LeftPosZ(16, 60).VSizePosZ(76, 96))
+	ITEM(Upp::EditField, editPrivateKey_, HSizePosZ(76, 16).TopPosZ(76, 20))
+	ITEM(GridLayoutCtrl, grid_, HSizePosZ(12, 12).TopPosZ(100, 80))
+END_LAYOUT
+
+LAYOUT(TunnelPeerEditorLayout, 500, 356)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Peer")).HSizePosZ(8, 8).TopPosZ(4, 348))
+	ITEM(Upp::StaticText, dv___1, SetText(t_("Name")).LeftPosZ(16, 100).TopPosZ(24, 20))
+	ITEM(Upp::EditField, editName_, HSizePosZ(116, 48).TopPosZ(24, 20))
+	ITEM(Upp::Button, btnDelete_, RightPosZ(16, 24).TopPosZ(20, 24))
+	ITEM(Upp::StaticText, dv___4, SetText(t_("Endpoint")).LeftPosZ(16, 100).TopPosZ(48, 20))
+	ITEM(Upp::EditField, editEndpoint_, HSizePosZ(116, 16).TopPosZ(48, 20))
+	ITEM(Upp::StaticText, dv___6, SetText(t_("PersistentKeepalive")).LeftPosZ(16, 100).VSizePosZ(72, 264))
+	ITEM(Upp::EditIntSpin, spinKeepAlive_, Min(0).Max(100000).MaxChars(6).LeftPosZ(116, 100).TopPosZ(72, 20))
+	ITEM(Upp::StaticText, dv___8, SetText(t_("PublicKey")).LeftPosZ(16, 100).TopPosZ(96, 20))
+	ITEM(Upp::EditField, editPublicKey_, HSizePosZ(116, 16).TopPosZ(96, 20))
+	ITEM(Upp::StaticText, dv___10, SetText(t_("PresharedKey")).LeftPosZ(16, 100).TopPosZ(120, 20))
+	ITEM(Upp::EditField, editPresharedKey_, HSizePosZ(116, 16).TopPosZ(120, 20))
+	ITEM(GridLayoutCtrl, grid_, HSizePosZ(12, 12).TopPosZ(144, 200))
+END_LAYOUT
+
+LAYOUT(TunnelAddressEditorLayout, 208, 120)
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).AppendLine(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+END_LAYOUT
+
+LAYOUT(TunnelAppEditorLayout, 208, 120)
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).AppendLine(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
 END_LAYOUT
 

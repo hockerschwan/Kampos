@@ -1,5 +1,7 @@
 uses
-	CtrlLib;
+	CtrlLib,
+	GridLayoutCtrl,
+	AutoScroller;
 
 file
 	app.rc,
@@ -25,6 +27,14 @@ file
 	src/RulesPage.hpp,
 	src/SettingsPage.cpp,
 	src/SettingsPage.hpp,
+	src/TunnelAddressEditor.hpp,
+	src/TunnelAppEditor.hpp,
+	src/TunnelEditor.cpp,
+	src/TunnelEditor.hpp,
+	src/TunnelInterfaceEditor.cpp,
+	src/TunnelInterfaceEditor.hpp,
+	src/TunnelPeerEditor.cpp,
+	src/TunnelPeerEditor.hpp,
 	src/TunnelsManager.cpp,
 	src/TunnelsManager.hpp,
 	src/TunnelsPage.cpp,
