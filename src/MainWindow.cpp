@@ -14,7 +14,7 @@ MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
-	SetMinSize(Zsz(720, 480));
+	SetMinSize(Zsz(760, 570));
 	WhenClose = [&] { Hide(); };
 
 	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%

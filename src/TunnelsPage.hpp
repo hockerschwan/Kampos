@@ -11,6 +11,8 @@ public:
 
 	void Layout() override { editor_->HSizePosZ(); };
 
+	void SetContent(const Id& uuid);
+
 private:
 	void Add();
 	void Add_(const TunnelConfig& config);
@@ -20,7 +22,7 @@ private:
 	void Rename(const Id& uuid);
 	void ScanTunnels();
 
-	void SetContent(const Id& uuid);
+	void Select(const Id& uuid);
 	void ShowMenu(Bar& bar);
 
 	Id colId_{"UUID"};

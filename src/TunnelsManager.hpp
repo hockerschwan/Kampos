@@ -15,12 +15,16 @@ public:
 	bool Import(const Array<String>& paths);
 	bool Rename(const Id& uuid, const String& name);
 
+	bool Save(const Id& uuid, const TunnelConfig& config, bool scan = false);
+
 private:
 	void ScanFiles();
 	TunnelConfig Parse(const String& str) const;
 	void Sort() { StableSortByValue(tunnels_); };
 
 	ArrayMap<Id, TunnelConfig> tunnels_{};
+
+	Mutex mutex_{};
 };
 
 #endif

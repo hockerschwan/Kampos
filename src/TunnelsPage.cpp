@@ -27,11 +27,10 @@ TunnelsPage::TunnelsPage()
 		};
 
 		ScanTunnels();
-		if(array_.GetCount() > 0) {
-			array_.SetCursor(0);
-		}
+		Select(String::GetVoid());
 	}
 
+	editor_->SetParent(this);
 	scroll_.scroll.y.AutoHide(false);
 	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
 }
@@ -50,14 +49,7 @@ void TunnelsPage::Add()
 	cfg.Interface.Name = name;
 	cfg.Interface.UUID = Helper::GetNewUuid();
 
-	TunnelPeer peer{};
-	peer.AllowedIPs.Add("0.0.0.0/0");
-	peer.AllowedIPs.Add("::/0");
-	peer.DisallowedIPs.Add("192.168.0.0/16");
-	peer.DisallowedIPs.Add("10.0.0.0/8");
-	peer.DisallowedIPs.Add("172.16.0.0/12");
-	peer.PersistentKeepalive = 30;
-	cfg.Peers.Add(pick(peer));
+	cfg.Peers.Add(pick(TunnelPeer::GetDefault()));
 
 	Add_(cfg);
 }
@@ -66,6 +58,7 @@ void TunnelsPage::Add_(const TunnelConfig& config)
 {
 	if(gTunnelsManager->Add(config)) {
 		ScanTunnels();
+		Select(config.Interface.UUID.ToString());
 	}
 	else {
 		ErrorOK(String("Could not write to ") << UnixPath(Helper::TunnelsPath() << config.Interface.Name << ".conf"));
@@ -81,6 +74,7 @@ void TunnelsPage::Delete(const Id& uuid)
 	if(PromptYesNo(String("Are you sure you want to delete ") << oldName << "?") == 1) {
 		gTunnelsManager->Delete(uuid);
 		ScanTunnels();
+		Select(String::GetVoid());
 	}
 }
 
@@ -171,6 +165,7 @@ void TunnelsPage::Rename(const Id& uuid)
 	auto name = (~dlg.text).ToString();
 	if(gTunnelsManager->Rename(uuid, name)) {
 		ScanTunnels();
+		Select(uuid);
 	}
 	else {
 		ErrorOK(String("Failed to rename ") << UnixPath(Helper::TunnelsPath() << oldName << ".conf"));
@@ -193,7 +188,6 @@ void TunnelsPage::SetContent(const Id& uuid)
 {
 	if(uuid.ToString().IsEmpty()) {
 		scroll_.Hide();
-		gLogger->Log("Cleared");
 		return;
 	}
 
@@ -206,6 +200,23 @@ void TunnelsPage::SetContent(const Id& uuid)
 	scroll_.Add(editor_->HSizePosZ());
 	scroll_.AddPane(*editor_);
 	scroll_.scroll.y.ScrollInto(0);
+}
+
+void TunnelsPage::Select(const Id& uuid)
+{
+	if(uuid == Helper::GetVoidUuid() || array_.GetCount() == 0) {
+		return;
+	}
+
+	auto id = uuid.ToString();
+	for(int i = 0; i < array_.GetCount(); ++i) {
+		if(array_.Get(i, colId_).ToString() == id) {
+			array_.SetCursor(i);
+			return;
+		}
+	}
+
+	array_.SetCursor(0);
 }
 
 void TunnelsPage::ShowMenu(Bar& bar)
@@ -223,6 +234,9 @@ void TunnelsPage::ShowMenu(Bar& bar)
 	bar.Add(selected, "Duplicate", Rescale(AppIcons::Copy(), iconSize, iconSize), [&, id] { Duplicate(Id(id)); });
 	bar.Add(selected, "Rename", Rescale(AppIcons::Pen(), iconSize, iconSize), [&, id] { Rename(Id(id)); });
 	bar.Add(selected, "Delete", Rescale(AppIcons::Bin(), iconSize, iconSize), [&, id] { Delete(Id(id)); });
-	// bar.Separator();
-	// bar.Add(selected, "Add peer", []{});
+	bar.Separator();
+	bar.Add(selected, "Add peer", Rescale(AppIcons::Add2(), iconSize, iconSize), [&, id] {
+		editor_->AddPeer();
+		scroll_.scroll.y.ScrollInto(scroll_.scroll.y.GetTotal());
+	});
 }

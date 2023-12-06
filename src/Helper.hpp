@@ -21,7 +21,7 @@ public:
 
 	// uuid
 	static Id GetNewUuid() { return Id(uuids::to_string(uuids::uuid_system_generator{}())); };
-	static Id GetVoidUuid() { return Id(uuids::to_string(uuids::uuid())); };
+	static Id GetVoidUuid() { return Id("00000000-0000-0000-0000-000000000000"); };
 
 	// other
 	static Tuple4<int, int, int, int> GetAppVersion();

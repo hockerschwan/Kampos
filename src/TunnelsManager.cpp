@@ -116,6 +116,23 @@ bool TunnelsManager::Rename(const Id& uuid, const String& name)
 	return res;
 }
 
+bool TunnelsManager::Save(const Id& uuid, const TunnelConfig& config, bool scan)
+{
+	mutex_.Enter();
+
+	auto& cfg = tunnels_.Get(uuid);
+	cfg = clone(config);
+	auto res = SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", cfg.ToString());
+
+	mutex_.Leave();
+
+	if(scan) {
+		ScanFiles();
+	}
+
+	return res;
+};
+
 void TunnelsManager::ScanFiles()
 {
 	tunnels_.Clear();

@@ -5,16 +5,19 @@
 
 struct TunnelAppEditor : public WithTunnelAppEditorLayout<ParentCtrl>, Moveable<TunnelAppEditor> {
 private:
-	SortedIndex<String> Apps_;
+	SortedIndex<String> Apps_{};
 
 public:
 	TunnelAppEditor()
 	{
 		CtrlLayout(*this);
+		Clear();
 		array_.AddColumn("Apps");
 	};
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
+
+	SortedIndex<String> Get() const { return pick(clone(Apps_)); };
 
 	void Add(const String& app) { array_.Add(app); };
 

@@ -5,16 +5,31 @@
 
 struct TunnelAddressEditor : public WithTunnelAddressEditorLayout<ParentCtrl>, Moveable<TunnelAddressEditor> {
 private:
-	SortedIndex<String> Addresses_;
+	SortedIndex<String> Addresses_{};
 
 public:
 	TunnelAddressEditor()
 	{
 		CtrlLayout(*this);
+		Clear();
 		array_.AddColumn("Address");
 	};
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
+
+	SortedIndex<String> Get() const { return pick(clone(Addresses_)); };
+
+	const String ToString() const
+	{
+		String str{};
+		for(int i = 0; i < Addresses_.GetCount(); ++i) {
+			str << Addresses_[i];
+			if(i != Addresses_.GetCount() - 1) {
+				str << ", ";
+			}
+		}
+		return pick(str);
+	};
 
 	void Add(const String& address) { array_.Add(address); };
 

@@ -5,13 +5,22 @@
 #include "TunnelStructs.hpp"
 #include "common.hpp"
 
+struct TunnelEditor;
+
 struct TunnelInterfaceEditor : public WithTunnelInterfaceEditorLayout<ParentCtrl> {
 public:
 	TunnelInterfaceEditor();
 
+	const TunnelInterface Get() const;
 	void Set(TunnelInterface& ifc);
 
+	void SetParent(TunnelEditor* editor) { editor_ = editor; };
+
 private:
+	void Save();
+
+	TunnelEditor* editor_;
+
 	One<TunnelAddressEditor> addresses_;
 	One<TunnelAddressEditor> dns_;
 };

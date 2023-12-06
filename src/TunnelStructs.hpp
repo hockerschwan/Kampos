@@ -75,6 +75,7 @@ public:
 		PersistentKeepalive = x.PersistentKeepalive;
 		PresharedKey = x.PresharedKey;
 		PublicKey = x.PublicKey;
+		Name = x.Name;
 	};
 
 	String ToString() const
@@ -103,6 +104,25 @@ public:
 		str << "\nEndpoint = " << Endpoint << "\nPersistentKeepalive = " << PersistentKeepalive.ToString();
 		str << "\nPresharedKey = " << PresharedKey << "\nPublicKey = " << PublicKey << "\n";
 		return str;
+	};
+
+	static TunnelPeer GetDefault()
+	{
+		TunnelPeer peer{};
+
+		peer.AllowedIPs.Add("0.0.0.0/0");
+		peer.AllowedIPs.Add("::/0");
+
+		// https://en.wikipedia.org/wiki/IP_address#Private_addresses
+		peer.DisallowedIPs.Add("10.0.0.0/8");
+		peer.DisallowedIPs.Add("172.16.0.0/12");
+		peer.DisallowedIPs.Add("192.168.0.0/16");
+		peer.DisallowedIPs.Add("fc00::/7");
+
+		peer.Name = "New peer";
+		peer.PersistentKeepalive = 30;
+
+		return pick(peer);
 	};
 
 	bool operator==(const TunnelPeer& rhs) const

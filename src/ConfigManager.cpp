@@ -114,7 +114,5 @@ bool ConfigManager::SaveConfig()
 		str << pair.key << "=" << pair.value << "\n";
 	}
 
-	SaveFile(ConfigFile(), str);
-
-	return true;
+	return SaveFile(ConfigFile(), str);
 }

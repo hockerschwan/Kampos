@@ -6,13 +6,26 @@
 #include "TunnelStructs.hpp"
 #include "common.hpp"
 
+struct TunnelEditor;
+
 class TunnelPeerEditor : public WithTunnelPeerEditorLayout<ParentCtrl>, Moveable<TunnelPeerEditor> {
 public:
 	TunnelPeerEditor();
 
-	void Set(TunnelPeer& peer);
+	const TunnelPeer Get() const;
+	void Set(TunnelPeer& peer, int i);
+
+	TunnelPeerEditor& SetParent(TunnelEditor* editor)
+	{
+		editor_ = editor;
+		return *this;
+	};
 
 private:
+	void Save();
+
+	TunnelEditor* editor_;
+
 	One<TunnelAddressEditor> allowedIPs_;
 	One<TunnelAddressEditor> disallowedIPs_;
 	One<TunnelAppEditor> allowedApps_;
