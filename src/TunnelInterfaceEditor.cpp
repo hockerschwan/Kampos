@@ -27,7 +27,8 @@ TunnelInterfaceEditor::TunnelInterfaceEditor()
 		Save();
 	};
 	editPrivateKey_.WhenAction = [&] { Save(); };
-	// todo: addresses_->WhenAction = [&] { Save(); };
+	addresses_->WhenArrayAction = [&] { Save(); };
+	dns_->WhenArrayAction = [&] { Save(); };
 }
 
 const TunnelInterface TunnelInterfaceEditor::Get() const
@@ -61,5 +62,3 @@ void TunnelInterfaceEditor::Set(TunnelInterface& ifc)
 		dns_->Add(addr);
 	}
 }
-
-void TunnelInterfaceEditor::Save() { editor_->Save(); }

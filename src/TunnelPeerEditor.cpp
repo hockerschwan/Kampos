@@ -35,7 +35,10 @@ TunnelPeerEditor::TunnelPeerEditor()
 	};
 	editPresharedKey_.WhenAction = [&] { Save(); };
 	editPublicKey_.WhenAction = [&] { Save(); };
-	// todo: allowedIPs_->WhenAction = [&] { Save(); };
+	allowedIPs_->WhenArrayAction = [&] { Save(); };
+	disallowedIPs_->WhenArrayAction = [&] { Save(); };
+	allowedApps_->WhenArrayAction = [&] { Save(); };
+	disallowedApps_->WhenArrayAction = [&] { Save(); };
 }
 
 const TunnelPeer TunnelPeerEditor::Get() const
@@ -68,7 +71,8 @@ void TunnelPeerEditor::Set(TunnelPeer& peer, int i)
 		}
 
 		if(PromptYesNo(str) == 1) {
-			editor_->DeletePeer(i);
+			Event<int> h = WhenDelete;
+			h(i);
 		}
 	};
 
@@ -98,5 +102,3 @@ void TunnelPeerEditor::Set(TunnelPeer& peer, int i)
 		disallowedApps_->Add(app);
 	}
 }
-
-void TunnelPeerEditor::Save() { editor_->Save(); }

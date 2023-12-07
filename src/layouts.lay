@@ -70,11 +70,11 @@ END_LAYOUT
 
 LAYOUT(TunnelAddressEditorLayout, 208, 120)
 	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).AppendLine(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
 END_LAYOUT
 
 LAYOUT(TunnelAppEditorLayout, 208, 120)
 	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).AppendLine(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
 END_LAYOUT
 

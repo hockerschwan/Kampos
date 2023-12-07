@@ -4,48 +4,29 @@
 #include "common.hpp"
 
 struct TunnelAddressEditor : public WithTunnelAddressEditorLayout<ParentCtrl>, Moveable<TunnelAddressEditor> {
-private:
-	SortedIndex<String> Addresses_{};
-
 public:
-	TunnelAddressEditor()
-	{
-		CtrlLayout(*this);
-		Clear();
-		array_.AddColumn("Address");
-	};
+	TunnelAddressEditor();
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
-
 	SortedIndex<String> Get() const { return pick(clone(Addresses_)); };
 
-	const String ToString() const
+	const String ToString() const;
+
+	void Add(const String& address);
+	void Clear();
+
+	Event<> WhenArrayAction;
+
+private:
+	void ArrayAction()
 	{
-		String str{};
-		for(int i = 0; i < Addresses_.GetCount(); ++i) {
-			str << Addresses_[i];
-			if(i != Addresses_.GetCount() - 1) {
-				str << ", ";
-			}
-		}
-		return pick(str);
+		Event<> h = WhenArrayAction;
+		h();
 	};
 
-	void Add(const String& address) { array_.Add(address); };
+	SortedIndex<String> Addresses_{};
 
-	void Clear()
-	{
-		Addresses_.Clear();
-		array_.Clear();
-	};
-
-	void Remove(const String& address)
-	{
-		auto i = array_.Find(address);
-		if(i >= 0) {
-			array_.Remove(i);
-		}
-	};
+	EditField edit_;
 };
 
 #endif

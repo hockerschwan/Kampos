@@ -4,36 +4,29 @@
 #include "common.hpp"
 
 struct TunnelAppEditor : public WithTunnelAppEditorLayout<ParentCtrl>, Moveable<TunnelAppEditor> {
-private:
-	SortedIndex<String> Apps_{};
-
 public:
-	TunnelAppEditor()
-	{
-		CtrlLayout(*this);
-		Clear();
-		array_.AddColumn("Apps");
-	};
+	TunnelAppEditor();
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
-
 	SortedIndex<String> Get() const { return pick(clone(Apps_)); };
 
-	void Add(const String& app) { array_.Add(app); };
+	const String ToString() const;
 
-	void Clear()
+	void Add(const String& app);
+	void Clear();
+
+	Event<> WhenArrayAction;
+
+private:
+	void ArrayAction()
 	{
-		Apps_.Clear();
-		array_.Clear();
+		Event<> h = WhenArrayAction;
+		h();
 	};
 
-	void Remove(const String& app)
-	{
-		auto i = array_.Find(app);
-		if(i >= 0) {
-			array_.Remove(i);
-		}
-	};
+	SortedIndex<String> Apps_{};
+
+	EditField edit_;
 };
 
 #endif

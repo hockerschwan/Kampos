@@ -9,7 +9,7 @@ extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 TunnelEditor::TunnelEditor()
 	: ifc_(MakeOne<TunnelInterfaceEditor>())
 {
-	ifc_->SetParent(this);
+	ifc_->WhenAction = [&] { Save(); };
 	this->Add(ifc_->HSizePosZ().TopPosZ(0));
 }
 
@@ -28,7 +28,10 @@ void TunnelEditor::SetId(const Id& uuid)
 
 			int i = 0;
 			for(auto& peer : cfg.Peers) {
-				peers_.Add().SetParent(this).Set(peer, i);
+				auto& pe = peers_.Add();
+				pe.WhenAction = [&] { Save(); };
+				pe.WhenDelete = [&](int j) { DeletePeer(j); };
+				pe.Set(peer, i);
 				++i;
 			}
 			break;

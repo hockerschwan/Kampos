@@ -15,16 +15,10 @@ public:
 	const TunnelPeer Get() const;
 	void Set(TunnelPeer& peer, int i);
 
-	TunnelPeerEditor& SetParent(TunnelEditor* editor)
-	{
-		editor_ = editor;
-		return *this;
-	};
+	Event<int> WhenDelete;
 
 private:
-	void Save();
-
-	TunnelEditor* editor_;
+	void Save() { Action(); };
 
 	One<TunnelAddressEditor> allowedIPs_;
 	One<TunnelAddressEditor> disallowedIPs_;

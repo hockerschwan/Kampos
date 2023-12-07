@@ -55,6 +55,7 @@ bool TunnelsManager::Import(const Array<String>& paths)
 
 	for(const auto& path : paths) {
 		auto cfg = Parse(LoadFile(path));
+
 		if(cfg == TunnelConfig::GetVoid()) {
 			gLogger->Log(String("Import failed: Could not parse " << path));
 			continue;
@@ -120,9 +121,12 @@ bool TunnelsManager::Save(const Id& uuid, const TunnelConfig& config, bool scan)
 {
 	mutex_.Enter();
 
-	auto& cfg = tunnels_.Get(uuid);
-	cfg = clone(config);
-	auto res = SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", cfg.ToString());
+	if(tunnels_.Find(uuid) > 0) {
+		auto& cfg = tunnels_.Get(uuid);
+		cfg = clone(config);
+	}
+
+	auto res = SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", config.ToString());
 
 	mutex_.Leave();
 
@@ -141,9 +145,28 @@ void TunnelsManager::ScanFiles()
 	find.Search(Helper::TunnelsPath() << "*.conf");
 
 	while(true) {
-		FileIn st(Helper::TunnelsPath() << find.GetName());
+		auto path = Helper::TunnelsPath() << find.GetName();
+		FileIn st(path);
+
+		auto name = find.GetName();
+		name.TrimEnd(".conf");
+
 		auto cfg = Parse(LoadStream(st));
+		st.Close();
+
 		if(cfg != TunnelConfig::GetVoid()) {
+			if(cfg.Interface.Name.IsEmpty()) {
+				cfg.Interface.Name = name;
+			}
+
+			if(cfg.Interface.UUID == Helper::GetVoidUuid()) {
+				Sys(String("attrib -r " << path)); // remove read only flag
+				FileDelete(path);
+
+				cfg.Interface.UUID = Helper::GetNewUuid();
+				Save(cfg.Interface.UUID, cfg);
+			}
+
 			tunnels_.Add(Id(cfg.Interface.UUID), pick(cfg));
 		}
 
@@ -292,10 +315,6 @@ TunnelConfig TunnelsManager::Parse(const String& str) const
 				peer.Name = value;
 			}
 		}
-	}
-
-	if(cfg.Interface.UUID == Helper::GetVoidUuid()) {
-		cfg.Interface.UUID = Helper::GetNewUuid();
 	}
 
 	return cfg;

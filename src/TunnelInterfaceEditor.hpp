@@ -14,12 +14,8 @@ public:
 	const TunnelInterface Get() const;
 	void Set(TunnelInterface& ifc);
 
-	void SetParent(TunnelEditor* editor) { editor_ = editor; };
-
 private:
-	void Save();
-
-	TunnelEditor* editor_;
+	void Save() { Action(); };
 
 	One<TunnelAddressEditor> addresses_;
 	One<TunnelAddressEditor> dns_;
