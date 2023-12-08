@@ -61,8 +61,7 @@ void TunnelEditor::AddPeer()
 				AtomicDec(timerRunning_);
 			}
 
-			parent_->SetContent(uuid_);
-
+			Refresh();
 			break;
 		}
 	}
@@ -87,8 +86,7 @@ void TunnelEditor::DeletePeer(int i)
 				AtomicDec(timerRunning_);
 			}
 
-			parent_->SetContent(uuid_);
-
+			Refresh();
 			break;
 		}
 	}

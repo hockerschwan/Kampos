@@ -1,9 +1,11 @@
 #include "Logger.hpp"
 #include "NewNameDialog.hpp"
+#include "ProcessManager.hpp"
 #include "TunnelsPage.hpp"
 
 extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
+extern std::unique_ptr<ProcessManager> gProcessManager;
 
 TunnelsPage::TunnelsPage()
 	: editor_(MakeOne<TunnelEditor>())
@@ -11,11 +13,12 @@ TunnelsPage::TunnelsPage()
 	CtrlLayout(*this);
 
 	{
-		array_.AddColumn(colId_, "UUID");
-		array_.AddColumn(colName_, "Name");
-		array_.HeaderTab(colId_).Hide();
+		array_.NoAutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(23)); // 24 @100%
 
-		array_.NoAutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zy(21)); // 24 @100%
+		array_.AddColumn(colId_, String::GetVoid()).HeaderTab().Hide();
+		array_.AddColumn(colIcon_, String::GetVoid()).HeaderTab().Fixed(Zx(23)).SetMargin(0);
+		array_.AddColumn(colName_, "Name");
+
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };
 		array_.WhenSel = [&] {
 			Id id{};
@@ -25,12 +28,27 @@ TunnelsPage::TunnelsPage()
 			}
 			SetContent(id);
 		};
+		array_.WhenLeftDouble = [&] {
+			Id id{};
+			auto i = array_.GetCursor();
+			if(i >= 0) {
+				id = array_.Get(i, colId_).ToString();
+			}
+
+			if(id == gProcessManager->GetCurrentId()) {
+				Disconnect();
+			}
+			else {
+				Connect(id);
+			}
+		};
 
 		ScanTunnels();
 		Select(String::GetVoid());
 	}
 
-	editor_->SetParent(this);
+	editor_->WhenRefresh = [&](Id& uuid) { SetContent(uuid); };
+
 	scroll_.scroll.y.AutoHide(false);
 	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
 }
@@ -176,12 +194,58 @@ void TunnelsPage::ScanTunnels()
 {
 	array_.Clear();
 
+	auto current = gProcessManager->GetCurrentId();
+
+	auto font = GetStdFont().Height(Zx(14));
+
 	auto tunnels = gTunnelsManager->GetTunnels();
 	for(const auto& item : ~(tunnels)) {
 		auto& id = item.key;
 		auto name = item.value.Interface.Name;
-		array_.Add(id.ToString(), name, true);
+		if(id == current) {
+			array_.Add(id.ToString(), Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19))),
+			           AttrText(name).SetFont(font)); // 20 @100%
+		}
+		else {
+			array_.Add(id.ToString(), Null, AttrText(name).SetFont(font));
+		}
 	}
+
+	array_.RefreshLayoutDeep();
+}
+
+void TunnelsPage::Connect(const Id& uuid)
+{
+	auto i = array_.Find(uuid.ToString(), colId_);
+	if(i < 0) {
+		return;
+	}
+
+	if(!gProcessManager->Start(uuid)) {
+		Exclamation("Could not start wiresock client");
+		return;
+	}
+
+	ScanTunnels();
+	Select(uuid);
+}
+
+void TunnelsPage::Disconnect()
+{
+	auto id = gProcessManager->GetCurrentId();
+	auto i = array_.Find(id.ToString(), colId_);
+	if(i < 0) {
+		return;
+	}
+
+	if(!gProcessManager->Stop()) {
+		Exclamation("Could not stop wiresock client");
+		return;
+	}
+
+	auto sel = Id(array_.Get(array_.GetCursor(), colId_));
+	ScanTunnels();
+	Select(sel);
 }
 
 void TunnelsPage::SetContent(const Id& uuid)
@@ -227,13 +291,23 @@ void TunnelsPage::ShowMenu(Bar& bar)
 		id = array_.Get(array_.GetCursor(), colId_).ToString();
 	}
 
+	auto used = id == gProcessManager->GetCurrentId().ToString();
+	auto connected = !gProcessManager->GetCurrentId().ToString().IsEmpty();
+
 	int iconSize = Zx(15); // 16 @100%
 
+	if(!connected) {
+		bar.Add(selected, "Connect", Rescale(AppIcons::Connect(), iconSize, iconSize), [&, id] { Connect(id); });
+	}
+	else {
+		bar.Add(connected, "Disconnect", Rescale(AppIcons::Disconnect(), iconSize, iconSize), [&] { Disconnect(); });
+	}
+	bar.Separator();
 	bar.Add("Add", Rescale(AppIcons::Add(), iconSize, iconSize), [&] { Add(); });
 	bar.Add("Import", Rescale(AppIcons::Folder(), iconSize, iconSize), [&] { Import(); });
 	bar.Add(selected, "Duplicate", Rescale(AppIcons::Copy(), iconSize, iconSize), [&, id] { Duplicate(Id(id)); });
-	bar.Add(selected, "Rename", Rescale(AppIcons::Pen(), iconSize, iconSize), [&, id] { Rename(Id(id)); });
-	bar.Add(selected, "Delete", Rescale(AppIcons::Bin(), iconSize, iconSize), [&, id] { Delete(Id(id)); });
+	bar.Add(selected & !used, "Rename", Rescale(AppIcons::Pen(), iconSize, iconSize), [&, id] { Rename(Id(id)); });
+	bar.Add(selected & !used, "Delete", Rescale(AppIcons::Bin(), iconSize, iconSize), [&, id] { Delete(Id(id)); });
 	bar.Separator();
 	bar.Add(selected, "Add peer", Rescale(AppIcons::Add2(), iconSize, iconSize), [&, id] {
 		editor_->AddPeer();

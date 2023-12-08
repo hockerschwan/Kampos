@@ -15,7 +15,7 @@ Button::Style ExitBtnStyle()
 	return s;
 }
 
-SettingsPage::SettingsPage()
+SettingsPanel::SettingsPanel()
 {
 	CtrlLayout(*this);
 
@@ -42,9 +42,9 @@ SettingsPage::SettingsPage()
 
 	{
 		auto wTxt = Helper::CalcSize(textLogLimit_.GetText(), textLogLimit_.GetFont());
-		textLogLimit_.LeftPosZ(textLogLimit_.GetPos().x.GetA(), wTxt + Zx(8));
+		textLogLimit_.LeftPos(Zx(textLogLimit_.GetPos().x.GetA()), wTxt + Zx(12));
 
-		spinLogLimit_.LeftPosZ(textLogLimit_.GetPos().x.GetA() + textLogLimit_.GetSize().cx, spinLogLimit_.GetSize().cx);
+		spinLogLimit_.LeftPos(textLogLimit_.GetPos().x.GetA() + textLogLimit_.GetPos().x.GetB(), spinLogLimit_.GetSize().cx);
 		spinLogLimit_.SetText(
 			IntStr(clamp(StrInt(gConfigManager->Load("LogDisplayLimit", "0")), spinLogLimit_.GetMin(), spinLogLimit_.GetMax())));
 		spinLogLimit_.WhenAction = [&] {
@@ -54,8 +54,32 @@ SettingsPage::SettingsPage()
 	}
 
 	{
-		auto wTxt = Helper::CalcSize(textWSLogLevel_.GetText(), textWSLogLevel_.GetFont());
-		textWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA(), wTxt + Zx(8));
+		auto wTxt = Helper::CalcSize(textWSPath_.GetText(), textWSPath_.GetFont());
+		textWSPath_.LeftPos(Zx(textWSPath_.GetPos().x.GetA()), wTxt + Zx(12));
+
+		auto wBtn = Helper::CalcSize(btnWSPath_.GetLabel(), btnWSPath_.GetFont(), Zx(56));
+		btnWSPath_.LeftPos(textWSPath_.GetPos().x.GetA() + textWSPath_.GetPos().x.GetB(), wBtn);
+		btnWSPath_.WhenAction = [&] {
+			FileSel sel{};
+			sel.Type("wiresock-client.exe", "wiresock-client.exe");
+			sel.ActiveDir(GetFileDirectory(gConfigManager->Load("WireSockPath")));
+
+			if(sel.ExecuteOpen() != 1) {
+				return;
+			}
+
+			auto path = sel.GetFile(0);
+			editWSPath_.SetText(path);
+			gConfigManager->Store("WireSockPath", path);
+		};
+
+		auto x = btnWSPath_.GetPos().x.GetA() + btnWSPath_.GetPos().x.GetB() + Zx(8);
+		editWSPath_.HSizePos(x, Zx(editWSPath_.GetPos().x.GetB()));
+		editWSPath_.SetText(gConfigManager->Load("WireSockPath", String::GetVoid()));
+	}
+
+	{
+		textWSLogLevel_.LeftPos(textWSPath_.GetPos().x.GetA(), textWSPath_.GetPos().x.GetB());
 
 		dropWSLogLevel_.Add("none", "None");
 		dropWSLogLevel_.Add("info", "Info");
@@ -70,7 +94,7 @@ SettingsPage::SettingsPage()
 			auto w = Helper::CalcSize(text, GetStdFont());
 			wMax = max(wMax, w);
 		}
-		dropWSLogLevel_.LeftPosZ(textWSLogLevel_.GetPos().x.GetA() + textWSLogLevel_.GetSize().cx, wMax + Zx(19));
+		dropWSLogLevel_.LeftPos(textWSLogLevel_.GetPos().x.GetA() + textWSLogLevel_.GetPos().x.GetB() + 1, wMax + Zx(24));
 
 		dropWSLogLevel_.WhenAction = [&] {
 			gConfigManager->Store("WireSockLogLevel", dropWSLogLevel_.GetKey(dropWSLogLevel_.GetIndex()));
@@ -125,4 +149,11 @@ SettingsPage::SettingsPage()
 			ShellExecuteExW(&info);
 		};
 	}
+}
+
+SettingsPage::SettingsPage()
+{
+	CtrlLayout(*this);
+	scroll_.Add(panel_.HSizePosZ());
+	scroll_.AddPane(panel_);
 }

@@ -9,6 +9,8 @@ public:
 	LogPage();
 	~LogPage() { Shutdown(); };
 
+	void ScrollBottom() { arrayCtrl_.ScrollEnd(); };
+
 private:
 	void Read();
 	void Append(const LogEntry& entry);

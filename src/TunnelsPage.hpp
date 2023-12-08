@@ -22,10 +22,14 @@ private:
 	void Rename(const Id& uuid);
 	void ScanTunnels();
 
+	void Connect(const Id& uuid);
+	void Disconnect();
+
 	void Select(const Id& uuid);
 	void ShowMenu(Bar& bar);
 
 	Id colId_{"UUID"};
+	Id colIcon_{"Icon"};
 	Id colName_{"Name"};
 
 	One<TunnelEditor> editor_;

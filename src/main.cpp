@@ -1,6 +1,7 @@
 #include "ConfigManager.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "ProcessManager.hpp"
 #include "TunnelsManager.hpp"
 #include <Core/Core.h>
 #include <shlobj.h>
@@ -12,6 +13,7 @@
 std::unique_ptr<Logger> gLogger;
 std::unique_ptr<ConfigManager> gConfigManager;
 std::unique_ptr<TunnelsManager> gTunnelsManager;
+std::unique_ptr<ProcessManager> gProcessManager;
 std::unique_ptr<MainWindow> gMainWindow;
 
 int IsAlreadyRunning()
@@ -68,6 +70,16 @@ INITBLOCK
 	gLogger = std::make_unique<Logger>();
 	gConfigManager = std::make_unique<ConfigManager>();
 	gTunnelsManager = std::make_unique<TunnelsManager>();
+	gProcessManager = std::make_unique<ProcessManager>();
+
+	if(!gProcessManager->ClientInstalled()) {
+		auto message = String() << "Could not find wiresock-client.exe\n";
+		message << t_("Download from") << " [^https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/^ ";
+		message << t_("here") << "]\n";
+		if(Prompt(BEEP_EXCLAMATION, Ctrl::GetAppName(), CtrlImg::exclamation(), message, true, t_("OK"), t_("Cancel")) != 1) {
+			Exit(-3);
+		}
+	}
 }
 
 GUI_APP_MAIN

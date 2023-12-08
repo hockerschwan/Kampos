@@ -3,12 +3,22 @@
 
 #include "common.hpp"
 
+struct SettingsPanel : WithSettingsLayout<ParentCtrl> {
+public:
+	SettingsPanel();
+
+private:
+	Button::Style exitStyle_;
+};
+
 struct SettingsPage : WithSettingsPageLayout<ParentCtrl> {
 public:
 	SettingsPage();
 
+	void Layout() override { panel_.HSizePosZ(); };
+
 private:
-	Button::Style exitStyle_;
+	SettingsPanel panel_;
 };
 
 #endif

@@ -45,6 +45,7 @@ void MainWindow::SetContent()
 		break;
 	case 2:
 		content_.Add(logPage_->SizePos());
+		logPage_->ScrollBottom();
 		break;
 	case 3:
 		content_.Add(settingsPage_->SizePos());

@@ -1,7 +1,8 @@
 uses
 	CtrlLib,
 	GridLayoutCtrl,
-	AutoScroller;
+	AutoScroller,
+	plugin/pcre;
 
 file
 	app.rc,
@@ -23,6 +24,8 @@ file
 	src/MainWindow.cpp,
 	src/MainWindow.hpp,
 	src/NewNameDialog.hpp,
+	src/ProcessManager.cpp,
+	src/ProcessManager.hpp,
 	src/RulesPage.cpp,
 	src/RulesPage.hpp,
 	src/SettingsPage.cpp,

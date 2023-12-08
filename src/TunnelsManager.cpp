@@ -31,8 +31,6 @@ bool TunnelsManager::Add(const TunnelConfig& config)
 
 bool TunnelsManager::Delete(const Id& uuid)
 {
-	// todo: do not delete currently used tunnel
-
 	auto& cfg = tunnels_.Get(uuid);
 	auto path = Helper::TunnelsPath() << cfg.Interface.Name << ".conf";
 	if(!FileExists(path)) {
