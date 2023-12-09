@@ -18,6 +18,17 @@ const ArrayMap<Id, TunnelConfig> TunnelsManager::GetTunnels() const
 	return pick(cl);
 }
 
+bool TunnelsManager::GetConfig(const Id& uuid, TunnelConfig& out) const
+{
+	auto i = tunnels_.Find(uuid);
+	if(i < 0) {
+		return false;
+	}
+
+	out = pick(clone(tunnels_.Get(uuid)));
+	return true;
+}
+
 bool TunnelsManager::Add(const TunnelConfig& config)
 {
 	if(!SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", config.ToString())) {

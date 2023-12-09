@@ -1,8 +1,12 @@
 #include "Helper.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "ProcessManager.hpp"
+#include "TunnelsManager.hpp"
 
 extern std::unique_ptr<Logger> gLogger;
+extern std::unique_ptr<TunnelsManager> gTunnelsManager;
+extern std::unique_ptr<ProcessManager> gProcessManager;
 extern std::unique_ptr<MainWindow> gMainWindow;
 
 MainWindow::MainWindow()
@@ -17,6 +21,9 @@ MainWindow::MainWindow()
 	SetMinSize(Zsz(800, 570));
 	WhenClose = [&] { Hide(); };
 
+	gProcessManager->WhenStarted << [&] { SetTitle(); };
+	gProcessManager->WhenStopped << [&] { SetTitle(); };
+
 	settingsPage_->WhenExit = [&] { ShowExitPrompt(); };
 
 	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%
@@ -30,6 +37,8 @@ MainWindow::MainWindow()
 	tray_->WhenBar = [&](Bar& bar) { ShowTrayMenu(bar); };
 	tray_->WhenLeftDown = [&] { ShowWindow(); };
 	tray_->Icon(AppIcons::Icon16);
+
+	SetTitle();
 }
 
 void MainWindow::SetContent()
@@ -53,6 +62,28 @@ void MainWindow::SetContent()
 		content_.Add(settingsPage_->SizePos());
 		break;
 	}
+}
+
+void MainWindow::SetTitle()
+{
+	PostCallback([&] {
+		auto id = gProcessManager->GetCurrentId();
+		if(id.ToString().IsEmpty()) {
+			Title("Disconnected");
+			tray_->Tip("Disconnected");
+			return;
+		}
+
+		TunnelConfig cfg{};
+		if(!gTunnelsManager->GetConfig(id, cfg)) {
+			return;
+		}
+
+		String str{};
+		str << "Connected to " << cfg.Interface.Name;
+		Title(str);
+		tray_->Tip(str);
+	});
 }
 
 void MainWindow::ShowExitPrompt()

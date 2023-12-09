@@ -12,6 +12,7 @@ public:
 
 private:
 	void SetContent();
+	void SetTitle();
 	void ShowExitPrompt();
 	void ShowTrayMenu(Bar& bar);
 	void ShowWindow();

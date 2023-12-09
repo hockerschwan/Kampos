@@ -53,30 +53,21 @@ bool ProcessManager::Start(const Id& uuid)
 
 	gLogger->Log(String("Client spawned: connecting to ") << cfg.Interface.Name);
 	uuid_ = uuid;
+	Started();
 	return true;
 }
 
 bool ProcessManager::Stop()
 {
+	uuid_ = String::GetVoid();
+
 	if(!process_.IsEmpty()) {
 		process_->Kill();
 		process_.Clear();
 	}
 
 	if(!thread_.IsEmpty() && thread_->IsOpen()) {
-		thread_->Wait();
 		thread_.Clear();
-		gLogger->Log("Client terminated");
-	}
-
-	uuid_ = String::GetVoid();
-
-	if(gMainWindow && !gMainWindow->IsShutdown()) {
-		Thread t{};
-		t.Run([&] {
-			t.Sleep(110);
-			Stopped();
-		});
 	}
 
 	return process_.IsEmpty() && (thread_.IsEmpty() || !thread_->IsOpen());
@@ -104,5 +95,11 @@ void ProcessManager::Read()
 		}
 
 		thread_->Sleep(100);
+	}
+
+	gLogger->Log("Client terminated");
+	uuid_ = String::GetVoid();
+	if(gMainWindow && !gMainWindow->IsShutdown()) {
+		Stopped();
 	}
 }

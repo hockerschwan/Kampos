@@ -49,7 +49,7 @@ TunnelsPage::TunnelsPage()
 
 	editor_->WhenRefresh = [&](Id& uuid) { SetContent(uuid); };
 
-	gProcessManager->WhenStopped = [&] { Disconnect(); };
+	gProcessManager->WhenStopped << [&] { Disconnect(); };
 
 	scroll_.scroll.y.AutoHide(false);
 	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
@@ -237,14 +237,16 @@ void TunnelsPage::Connect(const Id& uuid)
 void TunnelsPage::Disconnect()
 {
 	auto id = gProcessManager->GetCurrentId();
-	auto i = array_.Find(id.ToString(), colId_);
-	if(i < 0) {
-		return;
-	}
+	if(!id.ToString().IsEmpty()) {
+		auto i = array_.Find(id.ToString(), colId_);
+		if(i < 0) {
+			return;
+		}
 
-	if(!gProcessManager->Stop()) {
-		Exclamation("Could not stop wiresock client");
-		return;
+		if(!gProcessManager->Stop()) {
+			Exclamation("Could not stop wiresock client");
+			return;
+		}
 	}
 
 	auto sel = Id(array_.Get(array_.GetCursor(), colId_));

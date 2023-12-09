@@ -22,16 +22,8 @@ public:
 private:
 	void Read();
 
-	void Started()
-	{
-		Event<> h = WhenStarted;
-		h();
-	};
-	void Stopped()
-	{
-		Event<> h = WhenStopped;
-		h();
-	};
+	void Started() { WhenStarted(); };
+	void Stopped() { WhenStopped(); };
 
 	One<LocalProcess> process_{};
 	One<Thread> thread_{};

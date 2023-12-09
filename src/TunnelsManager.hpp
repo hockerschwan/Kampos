@@ -9,6 +9,7 @@ public:
 	TunnelsManager();
 
 	const ArrayMap<Id, TunnelConfig> GetTunnels() const;
+	bool GetConfig(const Id& uuid, TunnelConfig& out) const;
 
 	bool Add(const TunnelConfig& config);
 	bool Delete(const Id& uuid);
