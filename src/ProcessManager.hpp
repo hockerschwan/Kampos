@@ -16,11 +16,25 @@ public:
 	bool Start(const Id& uuid);
 	bool Stop();
 
+	Event<> WhenStarted;
+	Event<> WhenStopped;
+
 private:
 	void Read();
 
+	void Started()
+	{
+		Event<> h = WhenStarted;
+		h();
+	};
+	void Stopped()
+	{
+		Event<> h = WhenStopped;
+		h();
+	};
+
 	One<LocalProcess> process_{};
-	Thread thread_{};
+	One<Thread> thread_{};
 	Id uuid_{};
 };
 

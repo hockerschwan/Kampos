@@ -7,7 +7,15 @@ struct SettingsPanel : WithSettingsLayout<ParentCtrl> {
 public:
 	SettingsPanel();
 
+	Event<> WhenExit;
+
 private:
+	void ExitPressed()
+	{
+		Event<> h = WhenExit;
+		h();
+	};
+
 	Button::Style exitStyle_;
 };
 
@@ -17,7 +25,15 @@ public:
 
 	void Layout() override { panel_.HSizePosZ(); };
 
+	Event<> WhenExit;
+
 private:
+	void ExitPressed()
+	{
+		Event<> h = WhenExit;
+		h();
+	};
+
 	SettingsPanel panel_;
 };
 

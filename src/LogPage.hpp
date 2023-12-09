@@ -7,7 +7,7 @@
 struct LogPage : WithLogPageLayout<ParentCtrl> {
 public:
 	LogPage();
-	~LogPage() { Shutdown(); };
+	~LogPage() { thread_.Wait(); };
 
 	void ScrollBottom() { arrayCtrl_.ScrollEnd(); };
 

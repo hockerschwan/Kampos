@@ -7,9 +7,6 @@
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 
 struct NewNameDialog : public WithNewNameDialogLayout<TopWindow> {
-private:
-	const Array<char> forbiddenChars_{'\\', '/', ':', '*', '?', '"', '<', '>', '|'};
-
 public:
 	NewNameDialog()
 	{
@@ -26,8 +23,8 @@ public:
 				return;
 			}
 
-			for(const auto& ch : forbiddenChars_) {
-				if(str.Find(ch) >= 0) {
+			for(const auto& item : ~(Helper::ForbiddenChars())) {
+				if(str.Find(item.key) >= 0) {
 					ok.Disable();
 					return;
 				}

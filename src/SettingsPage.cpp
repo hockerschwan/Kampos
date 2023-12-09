@@ -1,9 +1,7 @@
 #include "ConfigManager.hpp"
-#include "MainWindow.hpp"
 #include "SettingsPage.hpp"
 
 extern std::unique_ptr<ConfigManager> gConfigManager;
-extern std::unique_ptr<MainWindow> gMainWindow;
 
 Button::Style ExitBtnStyle()
 {
@@ -125,7 +123,7 @@ SettingsPanel::SettingsPanel()
 		auto w = Helper::CalcSize(btnExit_.GetLabel(), btnExit_.GetFont(), Zx(56));
 		btnExit_.LeftPosZ(btnExit_.GetPos().x.GetA(), w);
 
-		btnExit_.WhenAction = [] { gMainWindow->Exit(); };
+		btnExit_.WhenAction = [&] { ExitPressed(); };
 	}
 
 	{
@@ -154,6 +152,8 @@ SettingsPanel::SettingsPanel()
 SettingsPage::SettingsPage()
 {
 	CtrlLayout(*this);
+	panel_.WhenExit = [&] { ExitPressed(); };
+
 	scroll_.Add(panel_.HSizePosZ());
 	scroll_.AddPane(panel_);
 }

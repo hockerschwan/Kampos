@@ -1,6 +1,7 @@
 #include "ConfigManager.hpp"
 #include "Helper.hpp"
 #include "Logger.hpp"
+#include "MainWindow.hpp"
 #include "ProcessManager.hpp"
 #include "TunnelsManager.hpp"
 #include <plugin/pcre/Pcre.h>
@@ -8,6 +9,7 @@
 extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<ConfigManager> gConfigManager;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
+extern std::unique_ptr<MainWindow> gMainWindow;
 
 bool ProcessManager::ClientInstalled()
 {
@@ -43,7 +45,8 @@ bool ProcessManager::Start(const Id& uuid)
 	cmd << "-log-level " << gConfigManager->Load("WireSockLogLevel", "none") << " -lac";
 
 	process_.Attach(new LocalProcess(cmd));
-	if(!thread_.RunNice([&] { Read(); })) {
+	thread_.Create();
+	if(!thread_->RunNice([&] { Read(); })) {
 		uuid_ = String::GetVoid();
 		return false;
 	}
@@ -60,14 +63,23 @@ bool ProcessManager::Stop()
 		process_.Clear();
 	}
 
-	if(thread_.IsOpen()) {
-		thread_.Wait();
+	if(!thread_.IsEmpty() && thread_->IsOpen()) {
+		thread_->Wait();
+		thread_.Clear();
 		gLogger->Log("Client terminated");
 	}
 
 	uuid_ = String::GetVoid();
 
-	return process_.IsEmpty() && !thread_.IsOpen();
+	if(gMainWindow && !gMainWindow->IsShutdown()) {
+		Thread t{};
+		t.Run([&] {
+			t.Sleep(110);
+			Stopped();
+		});
+	}
+
+	return process_.IsEmpty() && (thread_.IsEmpty() || !thread_->IsOpen());
 }
 
 void ProcessManager::Read()
@@ -91,6 +103,6 @@ void ProcessManager::Read()
 			}
 		}
 
-		thread_.Sleep(150);
+		thread_->Sleep(100);
 	}
 }

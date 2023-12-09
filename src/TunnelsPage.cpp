@@ -49,6 +49,8 @@ TunnelsPage::TunnelsPage()
 
 	editor_->WhenRefresh = [&](Id& uuid) { SetContent(uuid); };
 
+	gProcessManager->WhenStopped = [&] { Disconnect(); };
+
 	scroll_.scroll.y.AutoHide(false);
 	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
 }
@@ -192,6 +194,8 @@ void TunnelsPage::Rename(const Id& uuid)
 
 void TunnelsPage::ScanTunnels()
 {
+	GuiLock __;
+
 	array_.Clear();
 
 	auto current = gProcessManager->GetCurrentId();
@@ -272,6 +276,7 @@ void TunnelsPage::Select(const Id& uuid)
 		return;
 	}
 
+	GuiLock __;
 	auto id = uuid.ToString();
 	for(int i = 0; i < array_.GetCount(); ++i) {
 		if(array_.Get(i, colId_).ToString() == id) {

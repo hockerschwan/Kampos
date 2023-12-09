@@ -26,6 +26,10 @@ public:
 	// other
 	static Tuple4<int, int, int, int> GetAppVersion();
 	static const String GetTime();
+	static const VectorMap<String, String> ForbiddenChars()
+	{
+		return {{"\\", ""}, {"/", ""}, {":", ""}, {"*", ""}, {"?", ""}, {"\"", ""}, {"<", ""}, {">", ""}, {"|", ""}};
+	};
 };
 
 #endif

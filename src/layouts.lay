@@ -4,8 +4,8 @@ LAYOUT(MainWindowLayout, 400, 300)
 END_LAYOUT
 
 LAYOUT(TunnelsPageLayout, 400, 300)
-	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 140).VSizePosZ(0, -4))
-	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(140, 0).VSizePosZ(0, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 180).VSizePosZ(0, 0))
+	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(180, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 200)

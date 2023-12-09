@@ -59,8 +59,20 @@ bool TunnelsManager::Import(const Array<String>& paths)
 			continue;
 		}
 
+		if(cfg.Interface.UUID == Helper::GetVoidUuid()) {
+			cfg.Interface.UUID = Helper::GetNewUuid();
+		}
+
 		if(cfg.Interface.Name.IsEmpty()) {
-			cfg.Interface.Name = cfg.Interface.UUID.ToString();
+			auto t = TimeFromUTC(
+				std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+
+			auto name = GetFileName(path);
+			name.TrimEnd(GetFileExtPos(path));
+			name << "_" << FormatTime(t, "YYYYMMDD-HHmmss");
+			name = Replace(name, Helper::ForbiddenChars());
+
+			cfg.Interface.Name = name;
 		}
 
 		auto savePath = Helper::TunnelsPath() << cfg.Interface.Name << ".conf";

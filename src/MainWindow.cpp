@@ -14,8 +14,10 @@ MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
-	SetMinSize(Zsz(760, 570));
+	SetMinSize(Zsz(800, 570));
 	WhenClose = [&] { Hide(); };
+
+	settingsPage_->WhenExit = [&] { ShowExitPrompt(); };
 
 	navigation_.ItemWidth(Zx(61)).ItemHeight(Zy(56)); // 65,64 @100%
 	navigation_.RowMode().NoRoundSize().AutoHideSb(true).SetDisplay(CenteredImageDisplay());
@@ -59,6 +61,7 @@ void MainWindow::ShowExitPrompt()
 	if(PromptYesNo("Are you sure you want to exit?") == 1) {
 		gLogger->Log("Shutting down...");
 		Hide();
+		Shutdown();
 		ShutdownThreads();
 
 		tray_.Clear();
@@ -66,10 +69,6 @@ void MainWindow::ShowExitPrompt()
 		rulesPage_.Clear();
 		logPage_.Clear();
 		settingsPage_.Clear();
-
-		Thread t{};
-		t.Run([&] { t.Sleep(100); });
-		t.Wait();
 
 		gLogger->Log("Destroying MainWindow...");
 		auto del = gMainWindow.get_deleter();

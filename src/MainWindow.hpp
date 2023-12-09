@@ -10,8 +10,6 @@ struct MainWindow : public WithMainWindowLayout<TopWindow> {
 public:
 	MainWindow();
 
-	void Exit() { ShowExitPrompt(); };
-
 private:
 	void SetContent();
 	void ShowExitPrompt();
