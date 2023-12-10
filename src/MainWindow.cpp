@@ -21,7 +21,7 @@ MainWindow::MainWindow()
 	SetMinSize(Zsz(800, 570));
 	WhenClose = [&] { Hide(); };
 
-	gProcessManager->WhenStarted << [&] { SetTitle(); };
+	gProcessManager->WhenStarted << [&](Id& id) { SetTitle(); };
 	gProcessManager->WhenStopped << [&] { SetTitle(); };
 
 	settingsPage_->WhenExit = [&] { ShowExitPrompt(); };
@@ -68,7 +68,7 @@ void MainWindow::SetTitle()
 {
 	PostCallback([&] {
 		auto id = gProcessManager->GetCurrentId();
-		if(id.ToString().IsEmpty()) {
+		if(id.IsNull()) {
 			Title("Disconnected");
 			tray_->Tip("Disconnected");
 			return;
@@ -111,7 +111,24 @@ void MainWindow::ShowExitPrompt()
 
 void MainWindow::ShowTrayMenu(Bar& bar)
 {
+	bar.Sub("Tunnels", Rescale(AppIcons::Connect(), Zx(15), Zx(15)), [&](Bar& b) { ShowTunnelsSubMenu(b); });
+	bar.Separator();
 	bar.Add("Exit", CtrlImg::remove, [&] { ShowExitPrompt(); });
+}
+
+void MainWindow::ShowTunnelsSubMenu(Bar& bar)
+{
+	auto current = gProcessManager->GetCurrentId();
+	auto tunnels = gTunnelsManager->GetTunnels();
+	for(const auto& item : ~(tunnels)) {
+		auto id = item.key;
+		if(id == current) {
+			bar.Add(item.value.Interface.Name, [id] { gProcessManager->Start(id); }).Radio(true);
+		}
+		else {
+			bar.Add(item.value.Interface.Name, [id] { gProcessManager->Start(id); });
+		}
+	}
 }
 
 void MainWindow::ShowWindow()

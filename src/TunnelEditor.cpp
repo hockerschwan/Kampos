@@ -15,27 +15,27 @@ TunnelEditor::TunnelEditor()
 
 void TunnelEditor::SetId(const Id& uuid)
 {
+	if(!uuid_.IsNull() && timerRunning_ > 0) {
+		Save(true);
+	}
+
 	uuid_ = uuid;
-
 	peers_.Clear();
-	auto tunnels = gTunnelsManager->GetTunnels();
-	for(const auto& item : ~(tunnels)) {
-		auto& id = item.key;
-		if(id == uuid) {
-			auto& cfg = item.value;
 
-			ifc_->Set(cfg.Interface);
+	TunnelConfig cfg{};
+	if(!gTunnelsManager->GetConfig(uuid_, cfg)) {
+		return;
+	}
 
-			int i = 0;
-			for(auto& peer : cfg.Peers) {
-				auto& pe = peers_.Add();
-				pe.WhenAction = [&] { Save(); };
-				pe.WhenDelete = [&](int j) { DeletePeer(j); };
-				pe.Set(peer, i);
-				++i;
-			}
-			break;
-		}
+	ifc_->Set(cfg.Interface);
+
+	int i = 0;
+	for(auto& peer : cfg.Peers) {
+		auto& pe = peers_.Add();
+		pe.WhenAction = [&] { Save(); };
+		pe.WhenDelete = [&](int j) { DeletePeer(j); };
+		pe.Set(peer, i);
+		++i;
 	}
 
 	auto h = ifc_->GetSize().cy;
@@ -48,23 +48,16 @@ void TunnelEditor::SetId(const Id& uuid)
 
 void TunnelEditor::AddPeer()
 {
-	auto tunnels = gTunnelsManager->GetTunnels();
-	for(const auto& item : ~(tunnels)) {
-		auto& id = item.key;
-		if(id == uuid_) {
-			auto cfg = clone(item.value);
-			cfg.Peers.Add(TunnelPeer::GetDefault());
-
-			gTunnelsManager->Save(uuid_, cfg, true);
-
-			while(timerRunning_ > 0) {
-				AtomicDec(timerRunning_);
-			}
-
-			Refresh();
-			break;
-		}
+	TunnelConfig cfg{};
+	if(!gTunnelsManager->GetConfig(uuid_, cfg)) {
+		return;
 	}
+
+	cfg.Peers.Add(TunnelPeer::GetDefault());
+
+	gTunnelsManager->Save(uuid_, cfg, true);
+	ResetTimer();
+	Refresh();
 }
 
 void TunnelEditor::DeletePeer(int i)
@@ -73,47 +66,45 @@ void TunnelEditor::DeletePeer(int i)
 		return;
 	}
 
-	auto tunnels = gTunnelsManager->GetTunnels();
-	for(const auto& item : ~(tunnels)) {
-		auto& id = item.key;
-		if(id == uuid_) {
-			auto cfg = clone(item.value);
-			cfg.Peers.Remove(i);
-
-			gTunnelsManager->Save(uuid_, cfg, true);
-
-			while(timerRunning_ > 0) {
-				AtomicDec(timerRunning_);
-			}
-
-			Refresh();
-			break;
-		}
+	TunnelConfig cfg{};
+	if(!gTunnelsManager->GetConfig(uuid_, cfg)) {
+		return;
 	}
+
+	cfg.Peers.Remove(i);
+
+	gTunnelsManager->Save(uuid_, cfg, true);
+	ResetTimer();
+	Refresh();
 }
 
 void TunnelEditor::Save(bool immediate)
 {
-	if(timerRunning_ > 0) {
+	if(!immediate && timerRunning_ > 0) {
 		return;
 	}
 
 	AtomicInc(timerRunning_);
 	Thread t{};
 	t.Run([&] {
+		if(!immediate) {
+			t.Sleep(1000);
+		}
+
+		if(timerRunning_ == 0) {
+			return;
+		}
+
 		auto id = clone(uuid_);
 		auto& cfg = GetConfig();
 
-		if(!immediate) {
-			t.Sleep(200);
-		}
-
 		gTunnelsManager->Save(id, cfg, true);
-
-		if(timerRunning_ > 0) {
-			AtomicDec(timerRunning_);
-		}
+		ResetTimer();
 	});
+
+	if(immediate) {
+		t.Wait();
+	}
 }
 
 const TunnelConfig TunnelEditor::GetConfig() const

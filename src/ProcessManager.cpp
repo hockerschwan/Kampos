@@ -20,23 +20,16 @@ bool ProcessManager::ClientInstalled()
 bool ProcessManager::Start(const Id& uuid)
 {
 	if(!ClientInstalled()) {
-		uuid_ = String::GetVoid();
+		SetUUID(String::GetVoid());
 		return false;
 	}
-	else if(!Stop()) {
+
+	if(!Stop()) {
 		return false;
 	}
 
 	TunnelConfig cfg{};
-	auto tunnels = gTunnelsManager->GetTunnels();
-	for(const auto& item : ~(tunnels)) {
-		auto& id = item.key;
-		if(id == uuid) {
-			cfg = clone(item.value);
-			break;
-		}
-	}
-	if(cfg.Interface.UUID == Helper::GetVoidUuid()) {
+	if(!gTunnelsManager->GetConfig(uuid, cfg)) {
 		return false;
 	}
 
@@ -47,19 +40,19 @@ bool ProcessManager::Start(const Id& uuid)
 	process_.Attach(new LocalProcess(cmd));
 	thread_.Create();
 	if(!thread_->RunNice([&] { Read(); })) {
-		uuid_ = String::GetVoid();
+		SetUUID(String::GetVoid());
 		return false;
 	}
 
 	gLogger->Log(String("Client spawned: connecting to ") << cfg.Interface.Name);
-	uuid_ = uuid;
+	SetUUID(uuid);
 	Started();
 	return true;
 }
 
 bool ProcessManager::Stop()
 {
-	uuid_ = String::GetVoid();
+	SetUUID(String::GetVoid());
 
 	if(!process_.IsEmpty()) {
 		process_->Kill();
@@ -67,6 +60,7 @@ bool ProcessManager::Stop()
 	}
 
 	if(!thread_.IsEmpty() && thread_->IsOpen()) {
+		cv_.Signal();
 		thread_.Clear();
 	}
 
@@ -94,12 +88,13 @@ void ProcessManager::Read()
 			}
 		}
 
-		thread_->Sleep(100);
+		cv_.Wait(mThread_, 100);
 	}
 
 	gLogger->Log("Client terminated");
-	uuid_ = String::GetVoid();
+	SetUUID(String::GetVoid());
 	if(gMainWindow && !gMainWindow->IsShutdown()) {
 		Stopped();
 	}
+	return;
 }

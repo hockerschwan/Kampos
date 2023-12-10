@@ -29,6 +29,12 @@ private:
 		Event<Id> h = WhenRefresh;
 		h(uuid_);
 	};
+	void ResetTimer()
+	{
+		while(timerRunning_ > 0) {
+			AtomicDec(timerRunning_);
+		}
+	};
 
 	Id uuid_{};
 

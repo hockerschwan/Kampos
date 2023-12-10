@@ -15,6 +15,7 @@ private:
 	void SetTitle();
 	void ShowExitPrompt();
 	void ShowTrayMenu(Bar& bar);
+	void ShowTunnelsSubMenu(Bar& bar);
 	void ShowWindow();
 
 	One<TunnelsPage> tunnelsPage_;

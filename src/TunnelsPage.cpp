@@ -206,13 +206,8 @@ void TunnelsPage::ScanTunnels()
 	for(const auto& item : ~(tunnels)) {
 		auto& id = item.key;
 		auto name = item.value.Interface.Name;
-		if(id == current) {
-			array_.Add(id.ToString(), Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19))),
-			           AttrText(name).SetFont(font)); // 20 @100%
-		}
-		else {
-			array_.Add(id.ToString(), Null, AttrText(name).SetFont(font));
-		}
+		auto img = id == current ? Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19))) : Null;
+		array_.Add(id.ToString(), img, AttrText(name).SetFont(font)); // 20 @100%
 	}
 
 	array_.RefreshLayoutDeep();
@@ -237,7 +232,7 @@ void TunnelsPage::Connect(const Id& uuid)
 void TunnelsPage::Disconnect()
 {
 	auto id = gProcessManager->GetCurrentId();
-	if(!id.ToString().IsEmpty()) {
+	if(!id.IsNull()) {
 		auto i = array_.Find(id.ToString(), colId_);
 		if(i < 0) {
 			return;
@@ -249,14 +244,18 @@ void TunnelsPage::Disconnect()
 		}
 	}
 
-	auto sel = Id(array_.Get(array_.GetCursor(), colId_));
-	ScanTunnels();
-	Select(sel);
+	if(array_.GetCursor() >= 0) {
+		auto sel = Id(array_.Get(array_.GetCursor(), colId_));
+		ScanTunnels();
+		Select(sel);
+	}
 }
 
 void TunnelsPage::SetContent(const Id& uuid)
 {
-	if(uuid.ToString().IsEmpty()) {
+	GuiLock __;
+
+	if(uuid.IsNull()) {
 		scroll_.Hide();
 		return;
 	}
@@ -299,7 +298,7 @@ void TunnelsPage::ShowMenu(Bar& bar)
 	}
 
 	auto used = id == gProcessManager->GetCurrentId().ToString();
-	auto connected = !gProcessManager->GetCurrentId().ToString().IsEmpty();
+	auto connected = !gProcessManager->GetCurrentId().IsNull();
 
 	int iconSize = Zx(15); // 16 @100%
 
