@@ -2,6 +2,7 @@
 #define _ProcessManager_hpp_
 
 #include <Core/Core.h>
+#include <iphlpapi.h>
 
 using namespace Upp;
 
@@ -18,17 +19,22 @@ public:
 
 	Event<Id> WhenStarted;
 	Event<> WhenStopped;
+	Event<uint64, uint64> WhenBitRate;
 
 private:
 	void Read();
+
 	void SetUUID(const Id& uuid)
 	{
 		Mutex::Lock lock(mId_);
 		uuid_ = uuid;
 	};
 
+	bool GetAdapterInfo(IN const char* name, OUT MIB_IFROW& info);
+
 	void Started() { WhenStarted(uuid_); };
 	void Stopped() { WhenStopped(); };
+	void BitRate() { WhenBitRate(bitsRecv_, bitsSent_); };
 
 	One<LocalProcess> process_{};
 	One<Thread> thread_{};
@@ -37,6 +43,9 @@ private:
 
 	Id uuid_{};
 	Mutex mId_{};
+
+	int64 bitsRecv_ = 0;
+	int64 bitsSent_ = 0;
 };
 
 #endif

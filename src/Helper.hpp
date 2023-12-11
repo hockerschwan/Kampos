@@ -30,6 +30,7 @@ public:
 	{
 		return {{"\\", ""}, {"/", ""}, {":", ""}, {"*", ""}, {"?", ""}, {"\"", ""}, {"<", ""}, {">", ""}, {"|", ""}};
 	};
+	static String FormatWithPrefix(IN int64 numBefore, OUT double& numAfter);
 };
 
 #endif

@@ -44,11 +44,12 @@ TunnelsPage::TunnelsPage()
 		};
 
 		ScanTunnels();
-		Select(String::GetVoid());
+		Select(Id());
 	}
 
 	editor_->WhenRefresh = [&](Id& uuid) { SetContent(uuid); };
 
+	gProcessManager->WhenStarted << [&](Id& id) { ScanTunnels(); };
 	gProcessManager->WhenStopped << [&] { Disconnect(); };
 
 	scroll_.scroll.y.AutoHide(false);
@@ -78,7 +79,7 @@ void TunnelsPage::Add_(const TunnelConfig& config)
 {
 	if(gTunnelsManager->Add(config)) {
 		ScanTunnels();
-		Select(config.Interface.UUID.ToString());
+		Select(config.Interface.UUID);
 	}
 	else {
 		ErrorOK(String("Could not write to ") << UnixPath(Helper::TunnelsPath() << config.Interface.Name << ".conf"));
@@ -94,7 +95,7 @@ void TunnelsPage::Delete(const Id& uuid)
 	if(PromptYesNo(String("Are you sure you want to delete ") << oldName << "?") == 1) {
 		gTunnelsManager->Delete(uuid);
 		ScanTunnels();
-		Select(String::GetVoid());
+		Select(Id());
 	}
 }
 
@@ -185,7 +186,6 @@ void TunnelsPage::Rename(const Id& uuid)
 	auto name = (~dlg.text).ToString();
 	if(gTunnelsManager->Rename(uuid, name)) {
 		ScanTunnels();
-		Select(uuid);
 	}
 	else {
 		ErrorOK(String("Failed to rename ") << UnixPath(Helper::TunnelsPath() << oldName << ".conf"));
@@ -195,6 +195,11 @@ void TunnelsPage::Rename(const Id& uuid)
 void TunnelsPage::ScanTunnels()
 {
 	GuiLock __;
+
+	Id idOld{};
+	if(array_.IsCursor()) {
+		idOld = array_.Get(array_.GetCursor(), colId_).ToString();
+	}
 
 	array_.Clear();
 
@@ -211,6 +216,10 @@ void TunnelsPage::ScanTunnels()
 	}
 
 	array_.RefreshLayoutDeep();
+
+	if(!idOld.IsNull()) {
+		Select(idOld);
+	}
 }
 
 void TunnelsPage::Connect(const Id& uuid)
@@ -244,11 +253,7 @@ void TunnelsPage::Disconnect()
 		}
 	}
 
-	if(array_.GetCursor() >= 0) {
-		auto sel = Id(array_.Get(array_.GetCursor(), colId_));
-		ScanTunnels();
-		Select(sel);
-	}
+	ScanTunnels();
 }
 
 void TunnelsPage::SetContent(const Id& uuid)
@@ -273,16 +278,19 @@ void TunnelsPage::SetContent(const Id& uuid)
 
 void TunnelsPage::Select(const Id& uuid)
 {
-	if(uuid == Helper::GetVoidUuid() || array_.GetCount() == 0) {
+	if(array_.GetCount() == 0) {
 		return;
 	}
 
 	GuiLock __;
-	auto id = uuid.ToString();
-	for(int i = 0; i < array_.GetCount(); ++i) {
-		if(array_.Get(i, colId_).ToString() == id) {
-			array_.SetCursor(i);
-			return;
+
+	if(!uuid.IsNull()) {
+		auto str = uuid.ToString();
+		for(int i = 0; i < array_.GetCount(); ++i) {
+			if(array_.Get(i, colId_).ToString() == str) {
+				array_.SetCursor(i);
+				return;
+			}
 		}
 	}
 

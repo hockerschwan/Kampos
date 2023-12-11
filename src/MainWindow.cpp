@@ -22,7 +22,15 @@ MainWindow::MainWindow()
 	WhenClose = [&] { Hide(); };
 
 	gProcessManager->WhenStarted << [&](Id& id) { SetTitle(); };
-	gProcessManager->WhenStopped << [&] { SetTitle(); };
+	gProcessManager->WhenStopped << [&] {
+		bitsRecv_ = bitsSent_ = -1;
+		SetTitle();
+	};
+	gProcessManager->WhenBitRate << [&](uint64 r, uint64 s) {
+		bitsRecv_ = r;
+		bitsSent_ = s;
+		SetTitle();
+	};
 
 	settingsPage_->WhenExit = [&] { ShowExitPrompt(); };
 
@@ -81,8 +89,34 @@ void MainWindow::SetTitle()
 
 		String str{};
 		str << "Connected to " << cfg.Interface.Name;
-		Title(str);
-		tray_->Tip(str);
+
+		if(bitsRecv_ >= 0 || bitsSent_ >= 0) {
+			double r{};
+			String pfxR = Helper::FormatWithPrefix(bitsRecv_, r);
+			if(pfxR.IsEmpty()) {
+				str << " | R:" << Format("%5d", r) << " bps";
+			}
+			else {
+				str << " | R:" << Format("%5>.1f", r) << pfxR << "bps";
+			}
+
+			double s{};
+			String pfxS = Helper::FormatWithPrefix(bitsSent_, s);
+			if(pfxS.IsEmpty()) {
+				str << " S:" << Format("%5d", s) << " bps";
+			}
+			else {
+				str << " S:" << Format("%5>.1f", s) << pfxS << "bps";
+			}
+		}
+
+		if(this->IsShown()) {
+			Title(str);
+		}
+
+		auto tip = str;
+		tip.Replace(" | ", "\n");
+		tray_->Tip(tip);
 	});
 }
 
@@ -111,7 +145,13 @@ void MainWindow::ShowExitPrompt()
 
 void MainWindow::ShowTrayMenu(Bar& bar)
 {
-	bar.Sub("Tunnels", Rescale(AppIcons::Connect(), Zx(15), Zx(15)), [&](Bar& b) { ShowTunnelsSubMenu(b); });
+	auto iconSize = Zx(15);
+
+	if(!gProcessManager->GetCurrentId().IsNull()) {
+		bar.Add("Disconnect", Rescale(AppIcons::Disconnect(), iconSize, iconSize), [&] { gProcessManager->Stop(); });
+	}
+
+	bar.Sub("Tunnels", Rescale(AppIcons::Tunnels(), iconSize, iconSize), [&](Bar& b) { ShowTunnelsSubMenu(b); });
 	bar.Separator();
 	bar.Add("Exit", CtrlImg::remove, [&] { ShowExitPrompt(); });
 }

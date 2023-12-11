@@ -25,6 +25,9 @@ private:
 	One<TrayIcon> tray_;
 
 	bool exitPromptShown_ = false;
+
+	int64 bitsRecv_ = -1;
+	int64 bitsSent_ = -1;
 };
 
 #endif

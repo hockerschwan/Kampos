@@ -60,7 +60,11 @@ SettingsPanel::SettingsPanel()
 		btnWSPath_.WhenAction = [&] {
 			FileSel sel{};
 			sel.Type("wiresock-client.exe", "wiresock-client.exe");
-			sel.ActiveDir(GetFileDirectory(gConfigManager->Load("WireSockPath")));
+
+			auto dir = GetFileDirectory(gConfigManager->Load("WireSockPath"));
+			if(DirectoryExists(dir)) {
+				sel.ActiveDir(dir);
+			}
 
 			if(sel.ExecuteOpen() != 1) {
 				return;

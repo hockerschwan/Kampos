@@ -71,19 +71,18 @@ INITBLOCK
 	gConfigManager = std::make_unique<ConfigManager>();
 	gTunnelsManager = std::make_unique<TunnelsManager>();
 	gProcessManager = std::make_unique<ProcessManager>();
-
-	if(!gProcessManager->ClientInstalled()) {
-		auto message = String() << "Could not find wiresock-client.exe\n";
-		message << t_("Download from") << " [^https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/^ ";
-		message << t_("here") << "]\n";
-		if(Prompt(BEEP_EXCLAMATION, Ctrl::GetAppName(), CtrlImg::exclamation(), message, true, t_("OK"), t_("Cancel")) != 1) {
-			Exit(-3);
-		}
-	}
 }
 
 GUI_APP_MAIN
 {
+	if(!gProcessManager->ClientInstalled()) {
+		auto message = String() << t_("Could not find") << " wiresock-client.exe&" << t_("Download from");
+		message << " [^https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/^ " << t_("here") << "]";
+		if(Prompt(BEEP_EXCLAMATION, Ctrl::GetAppName(), CtrlImg::exclamation(), message, true, t_("Continue"), t_("Exit")) != 1) {
+			Exit(-3);
+		}
+	}
+
 	gLogger->Log("Application started.");
 
 	bool hide = ScanInt(gConfigManager->Load("StartHidden", "0")) == 1;

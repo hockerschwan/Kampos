@@ -44,3 +44,38 @@ const String Helper::GetTime()
 	snprintf(buf, 13, "%02d:%02d:%02d.%03d", t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
 	return String(buf);
 }
+
+String Helper::FormatWithPrefix(int64 numBefore, double& numAfter)
+{
+	long double n = numBefore;
+	String prefix{};
+	auto l = log10(numBefore);
+
+	if(l >= 18) {
+		prefix = "E";
+		n /= pow(10, 18);
+	}
+	else if(l >= 15) {
+		prefix = "P";
+		n /= pow(10, 15);
+	}
+	else if(l >= 12) {
+		prefix = "T";
+		n /= pow(10, 12);
+	}
+	else if(l >= 9) {
+		prefix = "G";
+		n /= pow(10, 9);
+	}
+	else if(l >= 6) {
+		prefix = "M";
+		n /= pow(10, 6);
+	}
+	else if(l >= 3) {
+		prefix = "k";
+		n /= pow(10, 3);
+	}
+
+	numAfter = n;
+	return pick(prefix);
+}
