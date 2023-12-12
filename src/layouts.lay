@@ -8,7 +8,9 @@ LAYOUT(TunnelsPageLayout, 400, 300)
 	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(180, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
-LAYOUT(RulesPageLayout, 400, 200)
+LAYOUT(RulesPageLayout, 400, 300)
+	ITEM(Upp::Button, btnAdd_, LeftPosZ(8, 56).TopPosZ(8, 20))
+	ITEM(Upp::ArrayCtrl, array_, HSizePosZ(0, 2).VSizePosZ(36, 0))
 END_LAYOUT
 
 LAYOUT(LogPageLayout, 400, 200)

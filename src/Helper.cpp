@@ -47,7 +47,7 @@ const String Helper::GetTime()
 
 String Helper::FormatWithPrefix(int64 numBefore, double& numAfter)
 {
-	long double n = numBefore;
+	long double n = (long double)numBefore;
 	String prefix{};
 	auto l = log10(numBefore);
 

@@ -19,7 +19,7 @@ public:
 
 	Event<Id> WhenStarted;
 	Event<> WhenStopped;
-	Event<uint64, uint64> WhenBitRate;
+	Event<int64, int64> WhenBitRate;
 
 private:
 	void Read();

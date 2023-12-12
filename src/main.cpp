@@ -1,6 +1,7 @@
 #include "ConfigManager.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "NetworkMonitor.hpp"
 #include "ProcessManager.hpp"
 #include "TunnelsManager.hpp"
 #include <Core/Core.h>
@@ -14,6 +15,7 @@ std::unique_ptr<Logger> gLogger;
 std::unique_ptr<ConfigManager> gConfigManager;
 std::unique_ptr<TunnelsManager> gTunnelsManager;
 std::unique_ptr<ProcessManager> gProcessManager;
+std::unique_ptr<NetworkMonitor> gNetworkMonitor;
 std::unique_ptr<MainWindow> gMainWindow;
 
 int IsAlreadyRunning()
@@ -71,6 +73,7 @@ INITBLOCK
 	gConfigManager = std::make_unique<ConfigManager>();
 	gTunnelsManager = std::make_unique<TunnelsManager>();
 	gProcessManager = std::make_unique<ProcessManager>();
+	gNetworkMonitor = std::make_unique<NetworkMonitor>();
 }
 
 GUI_APP_MAIN

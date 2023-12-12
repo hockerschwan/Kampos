@@ -1,12 +1,14 @@
 #include "Helper.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "NetworkMonitor.hpp"
 #include "ProcessManager.hpp"
 #include "TunnelsManager.hpp"
 
 extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 extern std::unique_ptr<ProcessManager> gProcessManager;
+extern std::unique_ptr<NetworkMonitor> gNetworkMonitor;
 extern std::unique_ptr<MainWindow> gMainWindow;
 
 MainWindow::MainWindow()
@@ -127,7 +129,12 @@ void MainWindow::ShowExitPrompt()
 		gLogger->Log("Shutting down...");
 		Hide();
 		Shutdown();
+
+		Thread::BeginShutdownThreads();
+		gProcessManager->Stop();
+		gNetworkMonitor->Stop();
 		ShutdownThreads();
+		Thread::EndShutdownThreads();
 
 		tray_.Clear();
 		tunnelsPage_.Clear();
