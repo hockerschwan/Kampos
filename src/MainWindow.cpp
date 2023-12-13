@@ -28,7 +28,8 @@ MainWindow::MainWindow()
 		bitsRecv_ = bitsSent_ = -1;
 		SetTitle();
 	};
-	gProcessManager->WhenBitRate << [&](uint64 r, uint64 s) {
+
+	gNetworkMonitor->WhenBitRate << [&](uint64 r, uint64 s) {
 		bitsRecv_ = r;
 		bitsSent_ = s;
 		SetTitle();
@@ -131,8 +132,14 @@ void MainWindow::ShowExitPrompt()
 		Shutdown();
 
 		Thread::BeginShutdownThreads();
+		gLogger->ClearEvents();
+
 		gProcessManager->Stop();
+		gProcessManager->ClearEvents();
+
 		gNetworkMonitor->Stop();
+		gNetworkMonitor->ClearEvents();
+
 		ShutdownThreads();
 		Thread::EndShutdownThreads();
 

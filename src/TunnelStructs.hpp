@@ -3,7 +3,6 @@
 
 #include "Helper.hpp"
 #include <Core/Core.h>
-#include <stduuid/uuid.h>
 
 using namespace Upp;
 

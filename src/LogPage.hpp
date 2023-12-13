@@ -7,16 +7,12 @@
 struct LogPage : WithLogPageLayout<ParentCtrl> {
 public:
 	LogPage();
-	~LogPage() { thread_.Wait(); };
 
 	void ScrollBottom() { arrayCtrl_.ScrollEnd(); };
 
 private:
 	void Read();
 	void Append(const LogEntry& entry);
-
-	Thread thread_{};
-	Mutex mutex_{};
 };
 
 #endif

@@ -13,6 +13,15 @@ public:
 	bool Start();
 	bool Stop();
 
+	void ClearEvents()
+	{
+		WhenNetworkChanged.Clear();
+		WhenBitRate.Clear();
+	};
+
+	Event<Index<String>&, Index<String>&, Bits&> WhenNetworkChanged;
+	Event<int64, int64> WhenBitRate;
+
 private:
 	void Read();
 

@@ -16,7 +16,7 @@ bool NetworkMonitor::Start()
 
 bool NetworkMonitor::Stop()
 {
-	cv_.Broadcast();
+	cv_.Signal();
 	thread_.Clear();
 
 	return thread_.IsEmpty();
@@ -24,70 +24,96 @@ bool NetworkMonitor::Stop()
 
 void NetworkMonitor::Read()
 {
+	Index<String> connectionsEthernetOld{};
+	Index<String> connectionsWifiOld{};
+
+	WString virtualAdapterName{"WireSock Virtual Adapter"};
+	int64 bitsRecvOld = 0, bitsSentOld = 0;
+
 	while(!Thread::IsShutdownThreads()) {
-		// get physical adapters
-		Array<String> adaptersEthernet{};
-		Array<String> adaptersWifi{};
-		{
-			auto size = 128;
-			unsigned long outBufLen = sizeof(IP_ADAPTER_ADDRESSES_LH) * size;
-			auto adapterInfo = std::make_unique<IP_ADAPTER_ADDRESSES_LH[]>(size);
+		Index<String> connectionsEthernet{};
+		Index<String> connectionsWifi{};
 
-			if(GetAdaptersAddresses(AF_UNSPEC, 0, NULL, adapterInfo.get(), &outBufLen) != ERROR_SUCCESS) {
-				continue;
-			}
+		MIB_IFROW virtualAdapter{};
 
-			IP_ADAPTER_ADDRESSES_LH info = adapterInfo[0];
-			while(info.Next != nullptr) {
-				if(info.Flags & IP_ADAPTER_REGISTER_ADAPTER_SUFFIX) {
-					auto uuid = String(info.AdapterName);
-					uuid.TrimStart("{");
-					uuid.TrimEnd("}");
+		DWORD size = 0;
+		if(GetNumberOfInterfaces(&size) != NO_ERROR) {
+			continue;
+		}
+
+		unsigned long outBufLen = sizeof(IP_ADAPTER_ADDRESSES_LH) * size;
+		auto adapterInfo = std::make_unique<IP_ADAPTER_ADDRESSES_LH[]>(size);
+
+		if(GetAdaptersAddresses(AF_UNSPEC, 0, NULL, adapterInfo.get(), &outBufLen) != ERROR_SUCCESS) {
+			continue;
+		}
+
+		IP_ADAPTER_ADDRESSES_LH info = adapterInfo[0];
+		while(true) {
+			if(info.OperStatus == 1) {
+				if(info.IfType == IF_TYPE_PROP_VIRTUAL) {
+					if(virtualAdapterName.Compare(info.Description) == 0) {
+						virtualAdapter.dwIndex = info.IfIndex;
+						GetIfEntry(&virtualAdapter);
+					}
+				}
+				else if(info.IfType == MIB_IF_TYPE_ETHERNET || info.IfType == IF_TYPE_IEEE80211) {
+					WString name{};
+					auto i = 0;
+					while(true) {
+						WCHAR ch = info.FriendlyName[i];
+						if(ch == '\0') {
+							break;
+						}
+						name << ch;
+
+						++i;
+					};
 
 					switch(info.IfType) {
 					case MIB_IF_TYPE_ETHERNET:
-						adaptersEthernet.Add(uuid);
+						connectionsEthernet.FindAdd(name.ToString());
 						break;
 					case IF_TYPE_IEEE80211:
-						adaptersWifi.Add(uuid);
+						connectionsWifi.FindAdd(name.ToString());
 						break;
 					}
 				}
-
-				info = *info.Next;
 			}
+
+			if(info.Next == nullptr) {
+				break;
+			}
+			info = *info.Next;
 		}
 
-		// get connections
-		Array<String> connectionsEthernet{};
-		Array<String> connectionsWifi{};
 		{
-			auto cmpol = GetWinRegString("CMPOL", "SOFTWARE\\Microsoft\\WcmSvc");
-			auto len = cmpol.GetLength();
-			Array<String> lines{};
-			String str{};
-			for(int i = 0; i < len - 1; ++i) {
-				if(cmpol[i] == 0) {
-					lines.Add(str);
-					str.Clear();
-				}
-				else {
-					str << ToAscii(cmpol[i]);
-				}
-			}
+			auto b1 = connectionsEthernet != connectionsEthernetOld;
+			auto b2 = connectionsWifi != connectionsWifiOld;
+			if(b1 || b2) {
+				Bits b{};
+				b.Set(0, b1);
+				b.Set(1, b2);
 
-			for(int i = 0; i < lines.GetCount(); i += 4) {
-				auto id = ToUpper(lines[i]);
-				auto name = lines[i + 1];
-				if(FindIndex(adaptersEthernet, id) >= 0) {
-					connectionsEthernet.Add(name);
-				}
-				else if(FindIndex(adaptersWifi, id) >= 0) {
-					connectionsWifi.Add(name);
-				}
+				connectionsEthernetOld = clone(connectionsEthernet);
+				connectionsWifiOld = clone(connectionsWifi);
+
+				WhenNetworkChanged(connectionsEthernet, connectionsWifi, b);
 			}
 		}
 
-		cv_.Wait(mThread_, 5000);
+		{
+			int64 bitsRecv = 0, bitsSent = 0;
+			if(virtualAdapter.dwOperStatus >= IF_OPER_STATUS_CONNECTED) {
+				bitsRecv = 8 * (virtualAdapter.dwInOctets - bitsRecvOld);
+				bitsSent = 8 * (virtualAdapter.dwOutOctets - bitsSentOld);
+
+				bitsRecvOld = virtualAdapter.dwInOctets;
+				bitsSentOld = virtualAdapter.dwOutOctets;
+			}
+			WhenBitRate(bitsRecv, bitsSent);
+		}
+
+		cv_.Wait(mThread_, 1000);
 	}
 }

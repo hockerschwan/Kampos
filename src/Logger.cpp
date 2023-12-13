@@ -22,24 +22,19 @@ void Logger::Log(const String& value)
 
 	{
 		Mutex::Lock _(mutex_);
-		queue_.AddTail(entry);
+		queue_.Add(entry);
 	}
 	if(!Thread::IsShutdownThreads()) {
-		cv_.Signal();
+		WhenLog();
 	}
 }
 
-bool Logger::Read(LogEntry& out)
+const Array<LogEntry> Logger::Get()
 {
 	Mutex::Lock _(mutex_);
-	if(queue_.GetCount() == 0) {
-		out = LogEntry::GetVoid();
-		return false;
-	}
-
-	out = queue_.Head();
-	queue_.DropHead();
-	return queue_.GetCount() > 0;
+	auto cp = clone(queue_);
+	queue_.Clear();
+	return pick(cp);
 }
 
 int Logger::CountFiles(const String& path)
