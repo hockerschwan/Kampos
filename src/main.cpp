@@ -3,6 +3,7 @@
 #include "MainWindow.hpp"
 #include "NetworkMonitor.hpp"
 #include "ProcessManager.hpp"
+#include "RuleManager.hpp"
 #include "TunnelsManager.hpp"
 #include <Core/Core.h>
 #include <shlobj.h>
@@ -14,6 +15,7 @@
 std::unique_ptr<Logger> gLogger;
 std::unique_ptr<ConfigManager> gConfigManager;
 std::unique_ptr<TunnelsManager> gTunnelsManager;
+std::unique_ptr<RuleManager> gRuleManager;
 std::unique_ptr<ProcessManager> gProcessManager;
 std::unique_ptr<NetworkMonitor> gNetworkMonitor;
 std::unique_ptr<MainWindow> gMainWindow;
@@ -72,6 +74,7 @@ INITBLOCK
 	gLogger = std::make_unique<Logger>();
 	gConfigManager = std::make_unique<ConfigManager>();
 	gTunnelsManager = std::make_unique<TunnelsManager>();
+	gRuleManager = std::make_unique<RuleManager>();
 	gProcessManager = std::make_unique<ProcessManager>();
 	gNetworkMonitor = std::make_unique<NetworkMonitor>();
 }

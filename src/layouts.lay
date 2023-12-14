@@ -10,7 +10,7 @@ END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 300)
 	ITEM(Upp::Button, btnAdd_, LeftPosZ(8, 56).TopPosZ(8, 20))
-	ITEM(Upp::ArrayCtrl, array_, HSizePosZ(0, 2).VSizePosZ(36, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).NoCursor(true).HSizePosZ(0, 2).VSizePosZ(36, 0))
 END_LAYOUT
 
 LAYOUT(LogPageLayout, 400, 200)
@@ -85,5 +85,9 @@ END_LAYOUT
 LAYOUT(TunnelAppEditorLayout, 208, 120)
 	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
 	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+END_LAYOUT
+
+LAYOUT(RuleLayout, 360, 120)
+	ITEM(GridLayoutCtrl, grid_, HSizePosZ(4, 4).VSizePosZ(8, 8))
 END_LAYOUT
 
