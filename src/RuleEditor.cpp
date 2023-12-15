@@ -1,5 +1,4 @@
 #include "RuleEditor.hpp"
-#include "RuleManager.hpp"
 #include "TunnelsManager.hpp"
 
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
@@ -9,47 +8,67 @@ RuleEditor::RuleEditor()
 {
 	CtrlLayout(*this);
 
-	left_.Add(editName_.HSizePosZ(0, 8).TopPosZ(0, 20));
+	editName_.WhenAction = [&] { WhenAction(); };
+	dropTunnel_.WhenAction = [&] { WhenAction(); };
 
-	left_.Add(dropTunnel_.HSizePosZ(0, 8).TopPosZ(28, 20));
+	swType_.Add(RULE_ALL, "All", 2).Add(RULE_ANY, "Any", 2);
+	swType_.WhenAction = [&] { WhenAction(); };
 
-	swType_.SetLabel(RULE_ALL, "All").SetLabel(RULE_ANY, "Any", 4);
-	left_.Add(swType_.HSizePosZ().TopPosZ(52, 20));
-
-	left_.Add(textUUID_.HSizePosZ().BottomPosZ(0, 20));
-
-	grid_.SetColumns(2);
-	grid_.Add(left_);
-	grid_.Add(array_);
-
-	array_.Header(false);
+	gTunnelsManager->WhenListChanged << [&] { RefreshTunnels(); };
 }
 
 RuleEditor& RuleEditor::SetId(const Id& uuid)
 {
 	Rule rule{};
-	if(gRuleManager->GetRule(uuid, rule)) {
-		uuid_ = uuid;
-
-		GuiLock __;
-
-		editName_.SetText(rule.Name);
-
-		auto tunnels = gTunnelsManager->GetTunnels();
-		for(const auto& item : ~(tunnels)) {
-			auto id = item.key;
-			auto& tunnel = item.value;
-			dropTunnel_.Add(id.ToString(), tunnel.Interface.Name);
-		}
-		auto pos = tunnels.Find(rule.TunnelId);
-		if(pos >= 0) {
-			dropTunnel_.SetIndex(pos);
-		}
-
-		swType_.SetData(rule.Type);
-
-		textUUID_.SetText(uuid.ToString());
+	if(!gRuleManager->GetRule(uuid, rule)) {
+		uuid_ = Id();
+		return *this;
 	}
 
+	uuid_ = uuid;
+
+	GuiLock __;
+
+	editName_.SetText(rule.Name);
+
+	RefreshTunnels();
+
+	swType_.SetData(rule.Type);
+
 	return *this;
+}
+
+Rule RuleEditor::Get() const
+{
+	Rule rule{};
+	rule.UUID = uuid_;
+	rule.Name = editName_.GetText().ToString();
+	rule.TunnelId = dropTunnel_.GetIndex() >= 0 ? Id(dropTunnel_.GetKey(dropTunnel_.GetIndex())) : Id();
+	rule.Type = (RuleType)((int)swType_);
+	// todo: conditions
+
+	return pick(rule);
+}
+
+void RuleEditor::RefreshTunnels()
+{
+	GuiLock __;
+
+	dropTunnel_.Clear();
+	auto tunnels = gTunnelsManager->GetTunnels();
+	for(const auto& item : ~(tunnels)) {
+		auto id = item.key;
+		auto& tunnel = item.value;
+		dropTunnel_.Add(id.ToString(), tunnel.Interface.Name);
+	}
+
+	Rule rule{};
+	if(!gRuleManager->GetRule(uuid_, rule)) {
+		return;
+	}
+
+	auto pos = tunnels.Find(rule.TunnelId);
+	if(pos >= 0) {
+		dropTunnel_.SetIndex(pos);
+	}
 }

@@ -37,6 +37,7 @@ bool TunnelsManager::Add(const TunnelConfig& config)
 	}
 
 	ScanFiles();
+	WhenListChanged();
 	return true;
 }
 
@@ -55,6 +56,7 @@ bool TunnelsManager::Delete(const Id& uuid)
 	}
 
 	ScanFiles();
+	WhenListChanged();
 	return true;
 }
 
@@ -98,6 +100,7 @@ bool TunnelsManager::Import(const Array<String>& paths)
 
 	if(res) {
 		ScanFiles();
+		WhenListChanged();
 	}
 
 	return res;
@@ -130,6 +133,7 @@ bool TunnelsManager::Rename(const Id& uuid, const String& name)
 	auto res = SaveFile(path, cfg.ToString());
 	if(res) {
 		ScanFiles();
+		WhenListChanged();
 	}
 	else {
 		cfg.Interface.Name = oldName;

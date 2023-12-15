@@ -13,10 +13,10 @@ TunnelsPage::TunnelsPage()
 	CtrlLayout(*this);
 
 	{
-		array_.NoAutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(23)); // 24 @100%
+		array_.AutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(26)); // 28 @100%
 
 		array_.AddColumn(colId_, String::GetVoid()).HeaderTab().Hide();
-		array_.AddColumn(colIcon_, String::GetVoid()).HeaderTab().Fixed(Zx(23)).SetMargin(0);
+		array_.AddColumn(colIcon_, String::GetVoid()).HeaderTab().Fixed(Zx(26)).SetMargin(0);
 		array_.AddColumn(colName_, "Name");
 
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };

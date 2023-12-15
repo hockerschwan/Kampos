@@ -56,23 +56,26 @@ public:
 
 struct RuleManager {
 public:
-	RuleManager() { LoadFile(); };
+	RuleManager();
+
+	const ArrayMap<Id, Rule> GetRules() const { return pick(clone(rules_)); };
+	bool GetRule(const Id& uuid, Rule& out) const;
+	const Id GetCurrentId() const { return pick(clone(currentRule_)); };
 
 	Id Add();
 	bool Remove(const Id& uuid);
 
-	const ArrayMap<Id, Rule> GetRules() const { return pick(clone(rules_)); };
-	bool GetRule(const Id& uuid, Rule& out) const;
-
 	bool Save();
+	bool Save(const Rule& rule);
 
 private:
 	void LoadFile();
+	void CheckTunnelId();
 
 	const String path_ = Helper::RoamingPath() << "rules.json";
 
 	ArrayMap<Id, Rule> rules_{};
-	Id defaultRule_{};
+	Id currentRule_{};
 };
 
 #endif

@@ -9,8 +9,8 @@ LAYOUT(TunnelsPageLayout, 400, 300)
 END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 300)
-	ITEM(Upp::Button, btnAdd_, LeftPosZ(8, 56).TopPosZ(8, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).NoCursor(true).HSizePosZ(0, 2).VSizePosZ(36, 0))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 180).VSizePosZ(0, 0))
+	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(180, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(LogPageLayout, 400, 200)
@@ -87,7 +87,13 @@ LAYOUT(TunnelAppEditorLayout, 208, 120)
 	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
 END_LAYOUT
 
-LAYOUT(RuleLayout, 360, 120)
-	ITEM(GridLayoutCtrl, grid_, HSizePosZ(4, 4).VSizePosZ(8, 8))
+LAYOUT(RuleLayout, 360, 280)
+	ITEM(Upp::StaticText, dv___0, SetText(t_("Name")).LeftPosZ(8, 72).TopPosZ(8, 20))
+	ITEM(Upp::EditField, editName_, LeftPosZ(80, 180).TopPosZ(8, 20))
+	ITEM(Upp::StaticText, dv___2, SetText(t_("Tunnel")).LeftPosZ(8, 72).TopPosZ(36, 20))
+	ITEM(Upp::DropList, dropTunnel_, LeftPosZ(80, 180).TopPosZ(36, 20))
+	ITEM(Upp::StaticText, dv___4, LeftPosZ(8, 72).TopPosZ(64, 20))
+	ITEM(Upp::Switch, swType_, LeftPosZ(80, 180).TopPosZ(64, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).HSizePosZ(8, 8).VSizePosZ(92, 8))
 END_LAYOUT
 
