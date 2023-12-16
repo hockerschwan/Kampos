@@ -10,7 +10,7 @@ END_LAYOUT
 
 LAYOUT(RulesPageLayout, 400, 300)
 	ITEM(Upp::ArrayCtrl, array_, Header(false).LeftPosZ(0, 180).VSizePosZ(0, 0))
-	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(180, 0).VSizePosZ(0, 0))
+	ITEM(Upp::ParentCtrl, content_, HSizePosZ(180, 0).VSizePosZ(0, 0))
 END_LAYOUT
 
 LAYOUT(LogPageLayout, 400, 200)
@@ -94,6 +94,20 @@ LAYOUT(RuleLayout, 360, 280)
 	ITEM(Upp::DropList, dropTunnel_, LeftPosZ(80, 180).TopPosZ(36, 20))
 	ITEM(Upp::StaticText, dv___4, LeftPosZ(8, 72).TopPosZ(64, 20))
 	ITEM(Upp::Switch, swType_, LeftPosZ(80, 180).TopPosZ(64, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).HSizePosZ(8, 8).VSizePosZ(92, 8))
+	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(0, 0).VSizePosZ(92, 0))
+END_LAYOUT
+
+LAYOUT(RuleConditionSSIDLayout, 360, 36)
+	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
+	ITEM(Upp::EditField, edit_, HSizePosZ(36, 100).TopPosZ(8, 20))
+	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(28, 64).TopPosZ(8, 20))
+	ITEM(Upp::Button, btn_, RightPosZ(8, 20).TopPosZ(8, 20))
+END_LAYOUT
+
+LAYOUT(RuleConditionAnyNetworkLayout, 360, 36)
+	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
+	ITEM(Upp::Switch, sw_, LeftPosZ(36, 224).TopPosZ(8, 20))
+	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(28, 64).TopPosZ(8, 20))
+	ITEM(Upp::Button, btn_, RightPosZ(8, 20).TopPosZ(8, 20))
 END_LAYOUT
 

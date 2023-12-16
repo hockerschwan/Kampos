@@ -8,8 +8,6 @@ struct RulesPage : WithRulesPageLayout<ParentCtrl> {
 public:
 	RulesPage();
 
-	void Layout() override { editor_->HSizePosZ(); };
-
 	void SetContent(const Id& uuid);
 
 private:
@@ -17,6 +15,9 @@ private:
 	void ScanRules();
 	void Select(const Id& uuid);
 	void ShowMenu(Bar& bar);
+
+	void Drag();
+	void DropInsert(int i, PasteClip& clip);
 
 	Id colId_{"UUID"};
 	Id colIcon_{"Icon"};

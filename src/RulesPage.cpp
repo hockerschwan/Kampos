@@ -5,6 +5,8 @@
 extern std::unique_ptr<Logger> gLogger;
 extern std::unique_ptr<RuleManager> gRuleManager;
 
+const char* RuleDnDName = "RuleDragAndDrop";
+
 RulesPage::RulesPage()
 	: editor_(MakeOne<RuleEditor>())
 {
@@ -18,6 +20,8 @@ RulesPage::RulesPage()
 		array_.AddColumn(colName_, "Name");
 
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };
+		array_.WhenDrag = [&] { Drag(); };
+		array_.WhenDropInsert = [&](int i, PasteClip& clip) { DropInsert(i, clip); };
 		array_.WhenSel = [&] {
 			Id id{};
 			auto i = array_.GetCursor();
@@ -31,14 +35,13 @@ RulesPage::RulesPage()
 		Select(Id());
 	}
 
+	content_.Add(editor_->SizePos());
 	editor_->WhenAction = [&] {
 		Save();
 		ScanRules();
 		editor_->editName_.SetFocus();
 		editor_->editName_.SetSelection(editor_->editName_.GetText().GetCount(), 0);
 	};
-
-	scroll_.scroll.x.AutoHide(false).AutoDisable(false).Hide();
 }
 
 void RulesPage::SetContent(const Id& uuid)
@@ -46,19 +49,12 @@ void RulesPage::SetContent(const Id& uuid)
 	GuiLock __;
 
 	if(uuid.IsNull()) {
-		scroll_.Hide();
+		content_.Hide();
 		return;
 	}
 
-	scroll_.Show();
-	scroll_.EnableScroll();
-
 	editor_->SetId(uuid);
-
-	scroll_.RemoveChild(editor_.Get());
-	scroll_.Add(editor_->HSizePosZ());
-	scroll_.AddPane(*editor_);
-	scroll_.scroll.y.ScrollInto(0);
+	content_.Show();
 }
 
 void RulesPage::Save()
@@ -145,4 +141,30 @@ void RulesPage::ShowMenu(Bar& bar)
 			ScanRules();
 		}
 	});
+}
+
+void RulesPage::Drag()
+{
+	if(!array_.IsCursor()) {
+		return;
+	}
+
+	auto i = array_.GetCursor();
+	String id = array_.Get(i, colId_).ToString();
+
+	auto clip = InternalClip(array_, RuleDnDName);
+	Append(clip, id);
+
+	array_.DoDragAndDrop(clip);
+}
+
+void RulesPage::DropInsert(int i, PasteClip& clip)
+{
+	if(AcceptInternal<ArrayCtrl>(clip, RuleDnDName)) {
+		array_.InsertDrop(i, clip);
+		array_.SetFocus();
+
+		auto id = GetString(clip);
+		gRuleManager->Move(Id(id), i);
+	}
 }

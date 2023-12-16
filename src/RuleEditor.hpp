@@ -1,6 +1,8 @@
 #ifndef _RuleEditor_hpp_
 #define _RuleEditor_hpp_
 
+#include "RuleConditionEditorAnyNetwork.hpp"
+#include "RuleConditionEditorSSID.hpp"
 #include "RuleManager.hpp"
 #include "common.hpp"
 
@@ -15,7 +17,11 @@ public:
 private:
 	void RefreshTunnels();
 
+	void ShowConditionsMenu(Bar& bar);
+
 	Id uuid_{};
+	ParentCtrl conditions_{};
+	Array<Any> editors_{};
 };
 
 #endif

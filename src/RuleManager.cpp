@@ -49,6 +49,30 @@ bool RuleManager::Remove(const Id& uuid)
 	return Save();
 }
 
+void RuleManager::Move(const Id& uuid, int i)
+{
+	if(i < 0) {
+		return;
+	}
+
+	int iOld = rules_.Find(uuid);
+	if(iOld < 0) {
+		return;
+	}
+
+	if(i > iOld) {
+		--i;
+	}
+
+	Rule rule{};
+	GetRule(uuid, rule);
+
+	rules_.Remove(iOld);
+	rules_.Insert(i, uuid, pick(rule));
+
+	Save();
+}
+
 bool RuleManager::Save()
 {
 	String str{};
@@ -101,7 +125,30 @@ void RuleManager::LoadFile()
 		rule.Name = r["Name"];
 		rule.TunnelId = Id(r["TunnelId"]);
 		rule.Type = (RuleType)(StrInt(r["Type"].ToString()));
-		// todo: conditions
+
+		for(auto& c : r["Conditions"]) {
+			switch(StrInt(c["Type"].ToString())) {
+			case RULE_SSID: {
+				Any cond{};
+				cond.Create<RuleConditionSSID>();
+				cond.Get<RuleConditionSSID>().Negative = (bool)StrInt(c["Negative"].ToString());
+				cond.Get<RuleConditionSSID>().SSID = c["SSID"].ToString();
+
+				rule.Conditions.Add(pick(cond));
+				break;
+			}
+			case RULE_ANYNETWORK: {
+				Any cond{};
+				cond.Create<RuleConditionAnyNetwork>();
+				cond.Get<RuleConditionAnyNetwork>().Negative = (bool)StrInt(c["Negative"].ToString());
+				cond.Get<RuleConditionAnyNetwork>().NetworkType = (RuleNetworkType)StrInt(c["NetworkType"].ToString());
+
+				rule.Conditions.Add(pick(cond));
+				break;
+			}
+			}
+		}
+
 		rules_.Add(rule.UUID, pick(rule));
 	}
 }
