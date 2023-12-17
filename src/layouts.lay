@@ -92,22 +92,23 @@ LAYOUT(RuleLayout, 360, 280)
 	ITEM(Upp::EditField, editName_, LeftPosZ(80, 180).TopPosZ(8, 20))
 	ITEM(Upp::StaticText, dv___2, SetText(t_("Tunnel")).LeftPosZ(8, 72).TopPosZ(36, 20))
 	ITEM(Upp::DropList, dropTunnel_, LeftPosZ(80, 180).TopPosZ(36, 20))
-	ITEM(Upp::StaticText, dv___4, LeftPosZ(8, 72).TopPosZ(64, 20))
+	ITEM(Upp::StaticText, dv___4, SetText(t_("Conditions")).LeftPosZ(8, 72).TopPosZ(64, 20))
 	ITEM(Upp::Switch, swType_, LeftPosZ(80, 180).TopPosZ(64, 20))
-	ITEM(Upp::AutoScroller, scroll_, HSizePosZ(0, 0).VSizePosZ(92, 0))
+	ITEM(Upp::Button, btnAdd_, LeftPosZ(260, 64).TopPosZ(64, 20))
+	ITEM(Upp::AutoScroller, scroll_, SetFrame(Upp::TopSeparatorFrame()).HSizePosZ(0, 0).VSizePosZ(92, 0))
 END_LAYOUT
 
 LAYOUT(RuleConditionSSIDLayout, 360, 36)
 	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
 	ITEM(Upp::EditField, edit_, HSizePosZ(36, 100).TopPosZ(8, 20))
-	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(28, 64).TopPosZ(8, 20))
-	ITEM(Upp::Button, btn_, RightPosZ(8, 20).TopPosZ(8, 20))
+	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(32, 60).TopPosZ(8, 20))
+	ITEM(Upp::Button, btn_, RightPosZ(8, 24).TopPosZ(6, 24))
 END_LAYOUT
 
 LAYOUT(RuleConditionAnyNetworkLayout, 360, 36)
 	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
 	ITEM(Upp::Switch, sw_, LeftPosZ(36, 224).TopPosZ(8, 20))
-	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(28, 64).TopPosZ(8, 20))
-	ITEM(Upp::Button, btn_, RightPosZ(8, 20).TopPosZ(8, 20))
+	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(32, 60).TopPosZ(8, 20))
+	ITEM(Upp::Button, btn_, RightPosZ(8, 24).TopPosZ(6, 24))
 END_LAYOUT
 

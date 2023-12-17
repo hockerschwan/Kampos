@@ -137,6 +137,25 @@ String Rule::ToString() const
 	str << "{\n\t\"UUID\": \"" << UUID.ToString() << "\",\n\t\"Name\": \"" << Name << "\",\n\t";
 	str << "\"TunnelId\": \"" << TunnelId.ToString() << "\",\n\t\"Type\": \"" << (int)Type << "\",\n\t";
 	str << "\"Conditions\": [";
-	str << (Conditions.GetCount() > 0 ? "\t" : "") << "]\n}\n";
+	for(int i = 0; i < Conditions.GetCount(); ++i) {
+		auto& condAny = Conditions[i];
+		if(condAny.Is<RuleConditionSSID>()) {
+			auto& cond = condAny.Get<RuleConditionSSID>();
+			str << "\n\t\t{\n\t\t\t\"Type\": \"" << (int)cond.Type << "\",\n\t\t\t";
+			str << "\"Negative\": \"" << (int)cond.Negative << "\",\n\t\t\t";
+			str << "\"SSID\": \"" << cond.SSID << "\"\n\t\t}";
+		}
+		else if(condAny.Is<RuleConditionAnyNetwork>()) {
+			auto& cond = condAny.Get<RuleConditionAnyNetwork>();
+			str << "\n\t\t{\n\t\t\t\"Type\": \"" << (int)cond.Type << "\",\n\t\t\t";
+			str << "\"Negative\": \"" << (int)cond.Negative << "\",\n\t\t\t";
+			str << "\"NetworkType\": \"" << (int)cond.NetworkType << "\"\n\t\t}";
+		}
+
+		if(i != Conditions.GetCount() - 1) {
+			str << ",";
+		}
+	}
+	str << (Conditions.GetCount() > 0 ? "\n\t" : String::GetVoid()) << "]\n}\n";
 	return str;
 }

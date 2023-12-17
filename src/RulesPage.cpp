@@ -38,9 +38,9 @@ RulesPage::RulesPage()
 	content_.Add(editor_->SizePos());
 	editor_->WhenAction = [&] {
 		Save();
-		ScanRules();
-		editor_->editName_.SetFocus();
-		editor_->editName_.SetSelection(editor_->editName_.GetText().GetCount(), 0);
+		// ScanRules();
+		// editor_->editName_.SetFocus();
+		// editor_->editName_.SetSelection(editor_->editName_.GetText().GetCount(), 0);
 	};
 }
 
@@ -60,7 +60,17 @@ void RulesPage::SetContent(const Id& uuid)
 void RulesPage::Save()
 {
 	auto rule = editor_->Get();
-	gRuleManager->Save(rule);
+
+	for(const auto& c : rule.Conditions) {
+		if(c.Is<RuleConditionSSID>()) {
+			gLogger->Log("ssid");
+		}
+		else if(c.Is<RuleConditionAnyNetwork>()) {
+			gLogger->Log("any");
+		}
+	}
+
+	gRuleManager->Save(pick(rule));
 }
 
 void RulesPage::ScanRules()

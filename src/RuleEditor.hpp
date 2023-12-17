@@ -6,6 +6,27 @@
 #include "RuleManager.hpp"
 #include "common.hpp"
 
+struct RuleConditions : ParentCtrl {
+public:
+	void AddCondition(const Any& any);
+	void AddCondition(RuleConditionType type);
+	void DeleteCondition(int i);
+
+	int GetCount() const { return editors_.GetCount(); };
+	int GetHeight() const { return h_; };
+
+	Array<Any> Get() const;
+
+	Event<> WhenResize;
+
+private:
+	void Save() { WhenAction(); };
+
+	Array<Any> editors_{};
+
+	int h_ = 0;
+};
+
 struct RuleEditor : WithRuleLayout<ParentCtrl> {
 public:
 	RuleEditor();
@@ -15,13 +36,14 @@ public:
 	Rule Get() const;
 
 private:
+	void Save() { WhenAction(); };
+	void RefreshConditions();
 	void RefreshTunnels();
 
-	void ShowConditionsMenu(Bar& bar);
-
 	Id uuid_{};
-	ParentCtrl conditions_{};
-	Array<Any> editors_{};
+	One<RuleConditions> conditions_{};
+
+	One<PopUpList> addPop_{};
 };
 
 #endif
