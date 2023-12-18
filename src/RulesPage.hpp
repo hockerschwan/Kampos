@@ -11,6 +11,7 @@ public:
 	void SetContent(const Id& uuid);
 
 private:
+	void RefreshImage();
 	void Save();
 	void ScanRules();
 	void Select(const Id& uuid);

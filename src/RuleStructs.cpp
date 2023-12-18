@@ -1,14 +1,14 @@
 #include "NetworkMonitor.hpp"
+#include "RuleManager.hpp"
 #include "RuleStructs.hpp"
 
 extern std::unique_ptr<NetworkMonitor> gNetworkMonitor;
+extern std::unique_ptr<RuleManager> gRuleManager;
 
 RuleConditionSSID::RuleConditionSSID()
 	: RuleConditionBase()
 {
 	Type = RULE_SSID;
-	gNetworkMonitor->WhenNetworkChanged <<
-		[&](Index<String>& eth, Index<String>& wifi, Bits& bits) { IsSatisfied = eth.Find(SSID) >= 0 || wifi.Find(SSID) >= 0; };
 }
 
 RuleConditionSSID::RuleConditionSSID(const RuleConditionSSID& x, int n)
@@ -36,25 +36,15 @@ String RuleConditionSSID::Text() const
 	return pick(str);
 }
 
-void RuleConditionSSID::Check()
+void RuleConditionSSID::Check(const Index<String>& eth, const Index<String>& wifi)
 {
-	// todo
+	IsSatisfied = Negative ^ (eth.Find(SSID) >= 0 || wifi.Find(SSID) >= 0);
 }
 
 RuleConditionAnyNetwork::RuleConditionAnyNetwork()
 	: RuleConditionBase()
 {
 	Type = RULE_ANYNETWORK;
-	gNetworkMonitor->WhenNetworkChanged << [&](Index<String>& eth, Index<String>& wifi, Bits& bits) {
-		switch(NetworkType) {
-		case RULE_ETHERNET:
-			IsSatisfied = eth.GetCount() > 0;
-			break;
-		case RULE_WIFI:
-			IsSatisfied = wifi.GetCount() > 0;
-			break;
-		}
-	};
 }
 
 RuleConditionAnyNetwork::RuleConditionAnyNetwork(const RuleConditionAnyNetwork& x, int n)
@@ -90,12 +80,21 @@ String RuleConditionAnyNetwork::ToString() const
 	return pick(str);
 }
 
-void RuleConditionAnyNetwork::Check()
+void RuleConditionAnyNetwork::Check(const Index<String>& eth, const Index<String>& wifi)
 {
-	// todo
+	switch(NetworkType) {
+	case RULE_ETHERNET:
+		IsSatisfied = eth.GetCount() > 0;
+		break;
+	case RULE_WIFI:
+		IsSatisfied = wifi.GetCount() > 0;
+		break;
+	}
+	IsSatisfied ^= Negative;
 }
 
 Rule::Rule(const Rule& x, int n)
+	: Rule()
 {
 	UUID = x.UUID;
 	Name = x.Name;
@@ -118,17 +117,56 @@ Rule::Rule(const Rule& x, int n)
 	}
 }
 
-bool Rule::IsSatisFied() const
+void Rule::Check(const Index<String>& eth, const Index<String>& wifi)
 {
-	for(const auto& cond : Conditions) {
-		if(cond.Is<RuleConditionSSID>() && !cond.Get<RuleConditionSSID>().IsSatisfied) {
-			return false;
+	for(auto& condAny : Conditions) {
+		if(condAny.Is<RuleConditionSSID>()) {
+			auto& cond = condAny.Get<RuleConditionSSID>();
+			cond.Check(eth, wifi);
 		}
-		else if(cond.Is<RuleConditionAnyNetwork>() && !cond.Get<RuleConditionAnyNetwork>().IsSatisfied) {
-			return false;
+		else if(condAny.Is<RuleConditionAnyNetwork>()) {
+			auto& cond = condAny.Get<RuleConditionAnyNetwork>();
+			cond.Check(eth, wifi);
 		}
 	}
-	return true;
+
+	if(Conditions.GetCount() == 0) {
+		isSatisfied_ = Type == RULE_ANY;
+		return;
+	}
+
+	switch(Type) {
+	case RULE_ALL: {
+		for(const auto& cond : Conditions) {
+			if(cond.Is<RuleConditionSSID>() && !cond.Get<RuleConditionSSID>().IsSatisfied) {
+				isSatisfied_ = false;
+				return;
+			}
+			else if(cond.Is<RuleConditionAnyNetwork>() && !cond.Get<RuleConditionAnyNetwork>().IsSatisfied) {
+				isSatisfied_ = false;
+				return;
+			}
+		}
+		isSatisfied_ = true;
+		return;
+	}
+	case RULE_ANY: {
+		for(const auto& cond : Conditions) {
+			if(cond.Is<RuleConditionSSID>() && cond.Get<RuleConditionSSID>().IsSatisfied) {
+				isSatisfied_ = true;
+				return;
+			}
+			else if(cond.Is<RuleConditionAnyNetwork>() && cond.Get<RuleConditionAnyNetwork>().IsSatisfied) {
+				isSatisfied_ = true;
+				return;
+			}
+		}
+		isSatisfied_ = false;
+		return;
+	}
+	}
+
+	isSatisfied_ = false;
 }
 
 String Rule::ToString() const

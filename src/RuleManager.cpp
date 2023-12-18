@@ -1,11 +1,23 @@
+#include "Logger.hpp"
+#include "NetworkMonitor.hpp"
+#include "ProcessManager.hpp"
 #include "RuleManager.hpp"
 #include "TunnelsManager.hpp"
 
+extern std::unique_ptr<Logger> gLogger;
+extern std::unique_ptr<ProcessManager> gProcessManager;
+extern std::unique_ptr<NetworkMonitor> gNetworkMonitor;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 
 RuleManager::RuleManager()
 {
 	LoadFile();
+
+	gNetworkMonitor->NetworkDetected << [&](const Index<String>& eth, const Index<String>& wifi) {
+		ethernet_ = clone(eth);
+		wifi_ = clone(wifi);
+		CheckConditions(ethernet_, wifi_);
+	};
 
 	gTunnelsManager->WhenListChanged << [&] { CheckTunnelId(); };
 }
@@ -98,7 +110,9 @@ bool RuleManager::Save()
 		str << "\n";
 	}
 	str << (rules_.GetCount() > 0 ? "\t" : "") << "]\n}\n";
-	return SaveFile(path_, str);
+	auto res = SaveFile(path_, str);
+	CheckConditions();
+	return res;
 }
 
 bool RuleManager::Save(const Rule& rule)
@@ -168,4 +182,28 @@ void RuleManager::CheckTunnelId()
 	if(save) {
 		Save();
 	}
+}
+
+void RuleManager::CheckConditions(const Index<String>& eth, const Index<String>& wifi)
+{
+	Id uuid{}, tunnelId{};
+	for(const auto& item : ~(rules_)) {
+		auto& rule = item.value;
+		rule.Check(eth, wifi);
+		if(uuid.IsNull() && rule.IsSatisfied()) {
+			uuid = rule.UUID;
+			tunnelId = rule.TunnelId;
+		}
+	}
+
+	currentRule_ = uuid;
+
+	if(uuid.IsNull()) {
+		gProcessManager->Stop();
+		WhenRuleChanged(uuid);
+		return;
+	}
+
+	gProcessManager->Start(tunnelId, false);
+	WhenRuleChanged(uuid);
 }

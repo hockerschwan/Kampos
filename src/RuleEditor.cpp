@@ -140,6 +140,29 @@ void RuleConditions::DeleteCondition(int i)
 	Save();
 }
 
+void RuleConditions::Check()
+{
+	Rule rule{};
+	if(!gRuleManager->GetRule(uuid_, rule)) {
+		return;
+	}
+
+	for(int i = 0; i < editors_.GetCount(); ++i) {
+		auto& editorAny = editors_[i];
+
+		if(editorAny.Is<RuleConditionEditorSSID>()) {
+			auto& cond = rule.Conditions[i].Get<RuleConditionSSID>();
+			auto& editor = editorAny.Get<RuleConditionEditorSSID>();
+			editor.ToggleImage(cond.IsSatisfied);
+		}
+		else if(editorAny.Is<RuleConditionEditorAnyNetwork>()) {
+			auto& cond = rule.Conditions[i].Get<RuleConditionAnyNetwork>();
+			auto& editor = editorAny.Get<RuleConditionEditorAnyNetwork>();
+			editor.ToggleImage(cond.IsSatisfied);
+		}
+	}
+}
+
 Array<Any> RuleConditions::Get() const
 {
 	Array<Any> array{};
@@ -211,6 +234,12 @@ RuleEditor::RuleEditor()
 	scroll_.scroll.x.Disable();
 
 	gTunnelsManager->WhenListChanged << [&] { RefreshTunnels(); };
+
+	gRuleManager->WhenRuleChanged << [&](Id uuid) {
+		if(!conditions_.IsEmpty()) {
+			conditions_->Check();
+		}
+	};
 }
 
 RuleEditor& RuleEditor::SetId(const Id& uuid)
@@ -253,6 +282,7 @@ RuleEditor& RuleEditor::SetId(const Id& uuid)
 			conditions_->AddCondition(pick(any));
 		}
 	}
+	conditions_->SetId(rule.UUID);
 
 	return *this;
 }

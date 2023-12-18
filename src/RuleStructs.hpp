@@ -21,10 +21,6 @@ public:
 		Negative = x.Negative;
 	};
 
-	String ToString() const { return String::GetVoid(); };
-	String Text() const { return String::GetVoid(); };
-
-	void Check(){};
 	bool IsSatisfied = false;
 
 	RuleConditionType Type{};
@@ -38,7 +34,7 @@ public:
 
 	String ToString() const;
 	String Text() const;
-	void Check();
+	void Check(const Index<String>& eth, const Index<String>& wifi);
 
 	String SSID{};
 };
@@ -50,7 +46,7 @@ public:
 
 	String ToString() const;
 	String Text() const;
-	void Check();
+	void Check(const Index<String>& eth, const Index<String>& wifi);
 
 	RuleNetworkType NetworkType{};
 };
@@ -66,8 +62,13 @@ public:
 	Rule(){};
 	Rule(const Rule& x, int n);
 
-	bool IsSatisFied() const;
+	void Check(const Index<String>& eth, const Index<String>& wifi);
+	bool IsSatisfied() const { return isSatisfied_; };
+
 	String ToString() const;
+
+private:
+	bool isSatisfied_ = false;
 };
 
 #endif

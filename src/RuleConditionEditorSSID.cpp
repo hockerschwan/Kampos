@@ -4,6 +4,8 @@ RuleConditionEditorSSID::RuleConditionEditorSSID()
 {
 	CtrlLayout(*this);
 
+	img_.SetImage(Rescale(AppIcons::Check(), Zx(19), Zx(19))).Hide();
+
 	edit_.WhenAction = [&] { Save(); };
 
 	opt_.WhenAction = [&] { Save(); };

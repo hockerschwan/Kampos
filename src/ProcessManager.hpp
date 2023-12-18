@@ -13,7 +13,7 @@ public:
 	bool ClientInstalled();
 	const Id GetCurrentId() const { return pick(clone(uuid_)); };
 
-	bool Start(const Id& uuid);
+	bool Start(const Id& uuid, bool stop = true);
 	bool Stop();
 
 	void ClearEvents()

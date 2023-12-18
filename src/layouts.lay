@@ -100,14 +100,16 @@ END_LAYOUT
 
 LAYOUT(RuleConditionSSIDLayout, 360, 36)
 	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
-	ITEM(Upp::EditField, edit_, HSizePosZ(36, 100).TopPosZ(8, 20))
+	ITEM(Upp::StaticText, dv___1, SetText(t_("Connected to")).LeftPosZ(36, 80).TopPosZ(8, 20))
+	ITEM(Upp::EditField, edit_, HSizePosZ(116, 100).TopPosZ(8, 20))
 	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(32, 60).TopPosZ(8, 20))
 	ITEM(Upp::Button, btn_, RightPosZ(8, 24).TopPosZ(6, 24))
 END_LAYOUT
 
 LAYOUT(RuleConditionAnyNetworkLayout, 360, 36)
 	ITEM(Upp::ImageCtrl, img_, LeftPosZ(8, 20).TopPosZ(8, 20))
-	ITEM(Upp::Switch, sw_, LeftPosZ(36, 224).TopPosZ(8, 20))
+	ITEM(Upp::StaticText, dv___1, SetText(t_("Connected to")).LeftPosZ(36, 80).TopPosZ(8, 20))
+	ITEM(Upp::Switch, sw_, LeftPosZ(116, 144).TopPosZ(8, 20))
 	ITEM(Upp::Option, opt_, SetLabel(t_("Not")).RightPosZ(32, 60).TopPosZ(8, 20))
 	ITEM(Upp::Button, btn_, RightPosZ(8, 24).TopPosZ(6, 24))
 END_LAYOUT

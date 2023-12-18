@@ -50,6 +50,8 @@ MainWindow::MainWindow()
 	tray_->Icon(AppIcons::Icon16);
 
 	SetTitle();
+
+	gNetworkMonitor->Start();
 }
 
 void MainWindow::SetContent()

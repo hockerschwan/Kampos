@@ -16,7 +16,14 @@ RulesPage::RulesPage()
 		array_.AutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(26)); // 28 @100%
 
 		array_.AddColumn(colId_, String::GetVoid()).HeaderTab().Hide();
-		array_.AddColumn(colIcon_, String::GetVoid()).HeaderTab().Fixed(Zx(26)).SetMargin(0);
+		array_.AddColumn(colIcon_, String::GetVoid())
+			.With([](One<Ctrl>& x) {
+				auto& img = x.Create<ImageCtrl>();
+				img.SetImage(Rescale(AppIcons::Check(), Zx(19), Zx(19))).Hide();
+			})
+			.HeaderTab()
+			.Fixed(Zx(26))
+			.SetMargin(0);
 		array_.AddColumn(colName_, "Name");
 
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };
@@ -38,10 +45,10 @@ RulesPage::RulesPage()
 	content_.Add(editor_->SizePos());
 	editor_->WhenAction = [&] {
 		Save();
-		// ScanRules();
-		// editor_->editName_.SetFocus();
-		// editor_->editName_.SetSelection(editor_->editName_.GetText().GetCount(), 0);
+		gRuleManager->CheckConditions();
 	};
+
+	gRuleManager->WhenRuleChanged << [&](Id uuid) { RefreshImage(); };
 }
 
 void RulesPage::SetContent(const Id& uuid)
@@ -55,6 +62,18 @@ void RulesPage::SetContent(const Id& uuid)
 
 	editor_->SetId(uuid);
 	content_.Show();
+}
+
+void RulesPage::RefreshImage()
+{
+	auto current = gRuleManager->GetCurrentId();
+	for(int i = 0; i < array_.GetCount(); ++i) {
+		auto id = array_.Get(i, colId_).ToString();
+		auto* pImg = (ImageCtrl*)array_.GetCtrl(i, colIcon_);
+		if(pImg) {
+			pImg->Show(current.ToString() == id);
+		}
+	}
 }
 
 void RulesPage::Save()
@@ -92,11 +111,10 @@ void RulesPage::ScanRules()
 	for(const auto& item : ~(rules)) {
 		auto& id = item.key;
 		auto name = item.value.Name;
-		// auto img = id == current ? Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19))) : Null;
-		// array_.Add(id.ToString(), img, AttrText(name).SetFont(font)); // 20 @100%
 		array_.Add(id.ToString(), Null, AttrText(name).SetFont(font));
 	}
 
+	RefreshImage();
 	array_.RefreshLayoutDeep();
 
 	if(!idOld.IsNull()) {
@@ -147,8 +165,10 @@ void RulesPage::ShowMenu(Bar& bar)
 		}
 
 		if(PromptYesNo(String("Are you sure you want to delete ") << rule.Name << "?") == 1) {
+			array_.RemoveSelection();
 			gRuleManager->Remove(Id(id));
 			ScanRules();
+			array_.GoBegin();
 		}
 	});
 }

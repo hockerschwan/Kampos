@@ -31,6 +31,29 @@ void NetworkMonitor::Read()
 	int64 bitsRecvOld = 0, bitsSentOld = 0;
 
 	while(!Thread::IsShutdownThreads()) {
+		ArrayMap<String, String> connections{}; // uuid, name
+		{
+			auto cmpol = GetWinRegString("CMPOL", "SOFTWARE\\Microsoft\\WcmSvc");
+			Array<String> lines{};
+			String line{};
+			for(const auto& ch : cmpol) {
+				if(ch == '\0') {
+					if(line.IsEmpty()) {
+						break;
+					}
+					lines.Add(line);
+					line.Clear();
+					continue;
+				}
+				line << ch;
+			}
+			for(int i = 0; i < lines.GetCount(); i += 4) {
+				auto id = lines[i];
+				auto name = lines[i + 1];
+				connections.Add(id, name);
+			}
+		}
+
 		Index<String> connectionsEthernet{};
 		Index<String> connectionsWifi{};
 
@@ -58,25 +81,21 @@ void NetworkMonitor::Read()
 					}
 				}
 				else if(info.IfType == MIB_IF_TYPE_ETHERNET || info.IfType == IF_TYPE_IEEE80211) {
-					WString name{};
-					auto i = 0;
-					while(true) {
-						WCHAR ch = info.FriendlyName[i];
-						if(ch == '\0') {
+					String id{ToLower(info.AdapterName)};
+					id.TrimStart("{");
+					id.TrimEnd("}");
+
+					if(connections.Find(id) >= 0) {
+						auto name = connections.Get(id);
+
+						switch(info.IfType) {
+						case MIB_IF_TYPE_ETHERNET:
+							connectionsEthernet.FindAdd(name);
+							break;
+						case IF_TYPE_IEEE80211:
+							connectionsWifi.FindAdd(name);
 							break;
 						}
-						name << ch;
-
-						++i;
-					};
-
-					switch(info.IfType) {
-					case MIB_IF_TYPE_ETHERNET:
-						connectionsEthernet.FindAdd(name.ToString());
-						break;
-					case IF_TYPE_IEEE80211:
-						connectionsWifi.FindAdd(name.ToString());
-						break;
 					}
 				}
 			}
@@ -88,17 +107,11 @@ void NetworkMonitor::Read()
 		}
 
 		{
-			auto b1 = connectionsEthernet != connectionsEthernetOld;
-			auto b2 = connectionsWifi != connectionsWifiOld;
-			if(b1 || b2) {
-				Bits b{};
-				b.Set(0, b1);
-				b.Set(1, b2);
-
+			if(connectionsEthernet != connectionsEthernetOld || connectionsWifi != connectionsWifiOld) {
 				connectionsEthernetOld = clone(connectionsEthernet);
 				connectionsWifiOld = clone(connectionsWifi);
 
-				WhenNetworkChanged(connectionsEthernet, connectionsWifi, b);
+				NetworkDetected(connectionsEthernet, connectionsWifi);
 			}
 		}
 

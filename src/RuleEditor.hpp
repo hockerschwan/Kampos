@@ -8,12 +8,18 @@
 
 struct RuleConditions : ParentCtrl {
 public:
+	void SetId(const Id& uuid)
+	{
+		uuid_ = uuid;
+		Check();
+	};
 	void AddCondition(const Any& any);
 	void AddCondition(RuleConditionType type);
 	void DeleteCondition(int i);
 
-	int GetCount() const { return editors_.GetCount(); };
 	int GetHeight() const { return h_; };
+
+	void Check();
 
 	Array<Any> Get() const;
 
@@ -22,6 +28,7 @@ public:
 private:
 	void Save() { WhenAction(); };
 
+	Id uuid_{};
 	Array<Any> editors_{};
 
 	int h_ = 0;

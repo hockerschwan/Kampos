@@ -7,7 +7,7 @@ using namespace Upp;
 
 struct NetworkMonitor {
 public:
-	NetworkMonitor() { Start(); };
+	NetworkMonitor(){};
 	~NetworkMonitor() { Stop(); };
 
 	bool Start();
@@ -15,11 +15,11 @@ public:
 
 	void ClearEvents()
 	{
-		WhenNetworkChanged.Clear();
+		NetworkDetected.Clear();
 		WhenBitRate.Clear();
 	};
 
-	Event<Index<String>&, Index<String>&, Bits&> WhenNetworkChanged;
+	Event<Index<String>&, Index<String>&> NetworkDetected;
 	Event<int64, int64> WhenBitRate;
 
 private:

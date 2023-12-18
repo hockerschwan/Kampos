@@ -4,6 +4,8 @@ RuleConditionEditorAnyNetwork::RuleConditionEditorAnyNetwork()
 {
 	CtrlLayout(*this);
 
+	img_.SetImage(Rescale(AppIcons::Check(), Zx(19), Zx(19))).Hide();
+
 	sw_.Add(0, "Ethernet").Add(1, "Wi-Fi", 2);
 	sw_.WhenAction = [&] { Save(); };
 

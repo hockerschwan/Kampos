@@ -11,6 +11,8 @@ public:
 
 	RuleConditionAnyNetwork Get() const;
 
+	void ToggleImage(bool show) { img_.Show(show); };
+
 	Event<> WhenDelete;
 
 private:

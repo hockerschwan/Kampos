@@ -17,14 +17,17 @@ bool ProcessManager::ClientInstalled()
 	return FileExists(path);
 }
 
-bool ProcessManager::Start(const Id& uuid)
+bool ProcessManager::Start(const Id& uuid, bool stop)
 {
 	if(!ClientInstalled()) {
 		SetUUID(String::GetVoid());
 		return false;
 	}
 
-	if(!Stop()) {
+	if(!stop && uuid_ == uuid) {
+		return true;
+	}
+	else if(!Stop()) {
 		return false;
 	}
 
