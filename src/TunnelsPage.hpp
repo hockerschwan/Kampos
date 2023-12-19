@@ -13,6 +13,9 @@ public:
 
 	void SetContent(const Id& uuid);
 
+	void Connect(const Id& uuid);
+	void Disconnect();
+
 private:
 	void Add();
 	void Add_(const TunnelConfig& config);
@@ -21,9 +24,6 @@ private:
 	void Import();
 	void Rename(const Id& uuid);
 	void ScanTunnels();
-
-	void Connect(const Id& uuid);
-	void Disconnect();
 
 	void Select(const Id& uuid);
 	void ShowMenu(Bar& bar);

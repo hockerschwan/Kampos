@@ -17,7 +17,7 @@ public:
 	static int CalcSize(const String& text, const Font& font, int minWidth = 0);
 
 	// uuid
-	static Id GetNewUuid() { return Id(Uuid::Create().ToString()); };
+	static Id GetNewUuid() { return Id(ToLower(Uuid::Create().ToStringWithDashes())); };
 	static Id GetVoidUuid() { return Id("00000000-0000-0000-0000-000000000000"); };
 
 	// other

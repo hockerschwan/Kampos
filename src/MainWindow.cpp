@@ -1,3 +1,4 @@
+#include "ConfigManager.hpp"
 #include "Helper.hpp"
 #include "Logger.hpp"
 #include "MainWindow.hpp"
@@ -6,6 +7,7 @@
 #include "TunnelsManager.hpp"
 
 extern std::unique_ptr<Logger> gLogger;
+extern std::unique_ptr<ConfigManager> gConfigManager;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
 extern std::unique_ptr<ProcessManager> gProcessManager;
 extern std::unique_ptr<NetworkMonitor> gNetworkMonitor;
@@ -52,6 +54,15 @@ MainWindow::MainWindow()
 	SetTitle();
 
 	gNetworkMonitor->Start();
+
+	Thread t{};
+	t.Run([&] {
+		t.Sleep(100);
+		if(ScanInt(gConfigManager->Load("AutoConnect", "0"))) {
+			auto id = gConfigManager->Load("AutoConnectTunnelID", String::GetVoid());
+			tunnelsPage_->Connect(id);
+		}
+	});
 }
 
 void MainWindow::SetContent()

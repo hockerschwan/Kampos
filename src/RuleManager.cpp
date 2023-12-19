@@ -1,3 +1,4 @@
+#include "ConfigManager.hpp"
 #include "Logger.hpp"
 #include "NetworkMonitor.hpp"
 #include "ProcessManager.hpp"
@@ -5,6 +6,7 @@
 #include "TunnelsManager.hpp"
 
 extern std::unique_ptr<Logger> gLogger;
+extern std::unique_ptr<ConfigManager> gConfigManager;
 extern std::unique_ptr<ProcessManager> gProcessManager;
 extern std::unique_ptr<NetworkMonitor> gNetworkMonitor;
 extern std::unique_ptr<TunnelsManager> gTunnelsManager;
@@ -198,12 +200,18 @@ void RuleManager::CheckConditions(const Index<String>& eth, const Index<String>&
 
 	currentRule_ = uuid;
 
+	auto b = (bool)ScanInt(gConfigManager->Load("UseRules", "0"));
+
 	if(uuid.IsNull()) {
-		gProcessManager->Stop();
+		if(b) {
+			gProcessManager->Stop();
+		}
 		WhenRuleChanged(uuid);
 		return;
 	}
 
-	gProcessManager->Start(tunnelId, false);
+	if(b) {
+		gProcessManager->Start(tunnelId, false);
+	}
 	WhenRuleChanged(uuid);
 }

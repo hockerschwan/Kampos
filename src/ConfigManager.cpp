@@ -103,6 +103,9 @@ void ConfigManager::LoadConfig()
 
 	// add default values if missing
 	config_.FindAdd("StartHidden", "0");
+	config_.FindAdd("AutoConnect", "0");
+	config_.FindAdd("AutoConnectTunnelID", "");
+	config_.FindAdd("UseRules", "0");
 	config_.FindAdd("LogDisplayLimit", "1000");
 	config_.FindAdd("WireSockLogLevel", "none");
 	config_.FindAdd("WireSockPath", "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe");

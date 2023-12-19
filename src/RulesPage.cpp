@@ -12,6 +12,8 @@ RulesPage::RulesPage()
 {
 	CtrlLayout(*this);
 
+	content_.Hide();
+
 	{
 		array_.AutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(26)); // 28 @100%
 

@@ -16,6 +16,8 @@ private:
 		h();
 	};
 
+	void RefreshTunnels();
+
 	Button::Style exitStyle_;
 };
 
