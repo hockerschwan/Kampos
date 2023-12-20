@@ -1,5 +1,10 @@
 # Kampos
-WireSock client GUI
+WireSock client GUI on Windows
+
+## Build
+Common C++ options: -std=c++17
+
+Common link options: -lversion -lIphlpapi
 
 ## Credits
 Icons: [Basic Rounded Filled

@@ -5,17 +5,19 @@ uses
 	plugin/pcre;
 
 file
+	Misc readonly separator,
 	app.rc,
 	icon.ico,
 	manifest.xml,
 	README.md,
+	src/icons.iml,
+	src/layouts.lay,
+	"Source files" readonly separator,
 	src/common.hpp,
 	src/ConfigManager.cpp,
 	src/ConfigManager.hpp,
 	src/Helper.cpp,
 	src/Helper.hpp,
-	src/icons.iml,
-	src/layouts.lay,
 	src/Logger.cpp,
 	src/Logger.hpp,
 	src/LogPage.cpp,
