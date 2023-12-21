@@ -199,7 +199,11 @@ RuleEditor::RuleEditor()
 {
 	CtrlLayout(*this);
 
-	editName_.WhenAction = [&] { Save(); };
+	editName_.WhenAction = [&] {
+		int l{}, h{};
+		editName_.GetSelection(l, h);
+		WhenNameChanged(l, h);
+	};
 	dropTunnel_.WhenAction = [&] { Save(); };
 
 	swType_.Add(RULE_ALL, "All", 2).Add(RULE_ANY, "Any", 2);

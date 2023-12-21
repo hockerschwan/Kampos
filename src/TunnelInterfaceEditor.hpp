@@ -19,6 +19,7 @@ private:
 
 	One<TunnelAddressEditor> addresses_;
 	One<TunnelAddressEditor> dns_;
+	Id uuid_{};
 };
 
 #endif

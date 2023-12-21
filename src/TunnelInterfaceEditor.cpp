@@ -36,7 +36,7 @@ const TunnelInterface TunnelInterfaceEditor::Get() const
 	TunnelInterface ifc{};
 
 	ifc.Name = textName_.GetText();
-	ifc.UUID = Id(textUUID_.GetText());
+	ifc.UUID = clone(uuid_);
 	ifc.Address = clone(addresses_->Get());
 	ifc.DNS = clone(dns_->Get());
 	ifc.MTU = StrIntValue(spinMTU_.GetText().ToString());
@@ -48,7 +48,7 @@ const TunnelInterface TunnelInterfaceEditor::Get() const
 void TunnelInterfaceEditor::Set(TunnelInterface& ifc)
 {
 	textName_.SetText(ifc.Name);
-	textUUID_.SetText(ifc.UUID.ToString());
+	uuid_ = clone(ifc.UUID);
 	spinMTU_.SetText(ifc.MTU.ToString());
 	editPrivateKey_.SetText(ifc.PrivateKey);
 

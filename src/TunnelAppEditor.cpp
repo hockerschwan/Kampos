@@ -22,7 +22,7 @@ TunnelAppEditor::TunnelAppEditor()
 				if(Apps_.Find(m) < 0) {
 					Apps_.Add(m);
 					array_.Sort();
-					ArrayAction();
+					WhenArrayAction();
 					break;
 				}
 			}
@@ -33,7 +33,7 @@ TunnelAppEditor::TunnelAppEditor()
 				Apps_.Add(array_.Get(i, 0));
 			}
 			array_.Sort();
-			ArrayAction();
+			WhenArrayAction();
 		}
 	};
 	array_.WhenArrayAction = [&] {
@@ -41,7 +41,7 @@ TunnelAppEditor::TunnelAppEditor()
 			for(auto& app : Apps_) {
 				if(array_.Find(app, 0) < 0) {
 					Apps_.RemoveKey(app);
-					ArrayAction();
+					WhenArrayAction();
 					break;
 				}
 			}

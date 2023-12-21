@@ -8,7 +8,7 @@ public:
 	TunnelAddressEditor();
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
-	SortedIndex<String> Get() const { return pick(clone(Addresses_)); };
+	Index<String> Get() const { return pick(clone(Addresses_)); };
 
 	const String ToString() const;
 
@@ -18,13 +18,12 @@ public:
 	Event<> WhenArrayAction;
 
 private:
-	void ArrayAction()
-	{
-		Event<> h = WhenArrayAction;
-		h();
-	};
+	void AcceptEdit();
+	void Drag();
+	void Drop(PasteClip& clip);
+	void DropInsert(int i, PasteClip& clip);
 
-	SortedIndex<String> Addresses_{};
+	Index<String> Addresses_{};
 
 	EditField edit_;
 };

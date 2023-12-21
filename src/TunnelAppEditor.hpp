@@ -18,12 +18,6 @@ public:
 	Event<> WhenArrayAction;
 
 private:
-	void ArrayAction()
-	{
-		Event<> h = WhenArrayAction;
-		h();
-	};
-
 	SortedIndex<String> Apps_{};
 
 	EditField edit_;

@@ -49,6 +49,11 @@ RulesPage::RulesPage()
 		Save();
 		gRuleManager->CheckConditions();
 	};
+	editor_->WhenNameChanged = [&](int l, int h) {
+		Save();
+		ScanRules();
+		editor_->editName_.SetSelection(l, h);
+	};
 
 	gRuleManager->WhenRuleChanged << [&](Id uuid) { RefreshImage(); };
 }
@@ -81,16 +86,6 @@ void RulesPage::RefreshImage()
 void RulesPage::Save()
 {
 	auto rule = editor_->Get();
-
-	for(const auto& c : rule.Conditions) {
-		if(c.Is<RuleConditionSSID>()) {
-			gLogger->Log("ssid");
-		}
-		else if(c.Is<RuleConditionAnyNetwork>()) {
-			gLogger->Log("any");
-		}
-	}
-
 	gRuleManager->Save(pick(rule));
 }
 

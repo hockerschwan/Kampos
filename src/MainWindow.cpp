@@ -22,7 +22,7 @@ MainWindow::MainWindow()
 {
 	CtrlLayout(*this);
 	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
-	SetMinSize(Zsz(800, 570));
+	SetMinSize(Zsz(800, 540));
 	WhenClose = [&] { Hide(); };
 
 	gProcessManager->WhenStarted << [&](Id& id) { SetTitle(); };

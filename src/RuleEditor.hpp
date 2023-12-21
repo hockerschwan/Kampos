@@ -42,6 +42,8 @@ public:
 
 	Rule Get() const;
 
+	Event<int, int> WhenNameChanged;
+
 private:
 	void Save() { WhenAction(); };
 	void RefreshConditions();

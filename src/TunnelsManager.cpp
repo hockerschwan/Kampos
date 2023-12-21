@@ -13,7 +13,7 @@ const ArrayMap<Id, TunnelConfig> TunnelsManager::GetTunnels() const
 {
 	ArrayMap<Id, TunnelConfig> cl{};
 	for(const auto& item : ~(tunnels_)) {
-		cl.Add(pick(clone(item.key)), pick(clone(item.value)));
+		cl.Add(clone(item.key), clone(item.value));
 	}
 	return pick(cl);
 }

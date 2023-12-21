@@ -8,8 +8,8 @@ using namespace Upp;
 
 class TunnelInterface : Moveable<TunnelInterface>, DeepCopyOption<TunnelInterface> {
 public:
-	SortedIndex<String> Address{};
-	SortedIndex<String> DNS{};
+	Index<String> Address{};
+	Index<String> DNS{};
 	Value MTU = 0;
 	String PrivateKey{};
 
@@ -53,9 +53,9 @@ public:
 class TunnelPeer : Moveable<TunnelPeer>, DeepCopyOption<TunnelPeer> {
 public:
 	SortedIndex<String> AllowedApps{};
-	SortedIndex<String> AllowedIPs{};
+	Index<String> AllowedIPs{};
 	SortedIndex<String> DisallowedApps{};
-	SortedIndex<String> DisallowedIPs{};
+	Index<String> DisallowedIPs{};
 	String Endpoint{};
 	Value PersistentKeepalive = 0;
 	String PresharedKey{};
