@@ -52,14 +52,16 @@ LAYOUT(NewNameDialogLayout, 240, 72)
 	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).RightPosZ(8, 80).BottomPosZ(8, 24))
 END_LAYOUT
 
-LAYOUT(TunnelInterfaceEditorLayout, 500, 168)
-	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Interface")).HSizePosZ(8, 8).TopPosZ(8, 156))
+LAYOUT(TunnelInterfaceEditorLayout, 500, 312)
+	ITEM(Upp::LabelBox, dv___0, SetLabel(t_("Interface")).HSizePosZ(8, 8).TopPosZ(8, 300))
 	ITEM(Upp::StaticText, dv___1, SetText(t_("MTU")).LeftPosZ(16, 60).TopPosZ(28, 20))
 	ITEM(Upp::EditIntSpin, spinMTU_, Min(0).Max(1000000).MaxChars(6).LeftPosZ(76, 100).TopPosZ(28, 20))
 	ITEM(Upp::StaticText, textName_, RightPosZ(16, 40).TopPosZ(28, 20))
-	ITEM(Upp::StaticText, dv___4, SetText(t_("PrivateKey")).LeftPosZ(16, 60).VSizePosZ(52, 96))
+	ITEM(Upp::StaticText, dv___4, SetText(t_("PrivateKey")).LeftPosZ(16, 60).VSizePosZ(52, 240))
 	ITEM(Upp::EditField, editPrivateKey_, HSizePosZ(76, 16).TopPosZ(52, 20))
 	ITEM(GridLayoutCtrl, grid_, HSizePosZ(12, 12).TopPosZ(76, 80))
+	ITEM(GridLayoutCtrl, grid2_, HSizePosZ(12, 12).TopPosZ(160, 68))
+	ITEM(GridLayoutCtrl, grid3_, HSizePosZ(12, 12).TopPosZ(232, 68))
 END_LAYOUT
 
 LAYOUT(TunnelPeerEditorLayout, 500, 356)
@@ -86,6 +88,11 @@ END_LAYOUT
 LAYOUT(TunnelAppEditorLayout, 208, 120)
 	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
 	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+END_LAYOUT
+
+LAYOUT(TunnelCommandEditorLayout, 208, 60)
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).Moving(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
 END_LAYOUT
 
 LAYOUT(RuleLayout, 360, 280)

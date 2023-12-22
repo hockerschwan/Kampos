@@ -8,9 +8,7 @@ public:
 	TunnelAppEditor();
 
 	void SetText(const String& text) { textTitle_.SetText(text); };
-	SortedIndex<String> Get() const { return pick(clone(Apps_)); };
-
-	const String ToString() const;
+	Array<String> Get() const { return pick(clone(Apps_)); };
 
 	void Add(const String& app);
 	void Clear();
@@ -18,7 +16,7 @@ public:
 	Event<> WhenArrayAction;
 
 private:
-	SortedIndex<String> Apps_{};
+	Array<String> Apps_{};
 
 	EditField edit_;
 };

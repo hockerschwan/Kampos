@@ -224,6 +224,12 @@ void TunnelsPage::ScanTunnels()
 
 void TunnelsPage::Connect(const Id& uuid)
 {
+	auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+	if((now - timeConnect_).count() < 500) {
+		return;
+	}
+	timeConnect_ = now;
+
 	auto i = array_.Find(uuid.ToString(), colId_);
 	if(i < 0) {
 		return;

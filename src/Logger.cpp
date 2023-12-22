@@ -18,7 +18,7 @@ void Logger::Log(const String& value)
 	auto t = Helper::GetTime();
 	auto entry = LogEntry(t, value);
 
-	LOG(entry);
+	RLOG(entry);
 
 	{
 		Mutex::Lock _(mutex_);

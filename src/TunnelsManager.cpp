@@ -276,6 +276,18 @@ TunnelConfig TunnelsManager::Parse(const String& str) const
 			else if(key == "privatekey") {
 				ifc.PrivateKey = value;
 			}
+			else if(key == "preup") {
+				ifc.PreUp.Add(value);
+			}
+			else if(key == "postup") {
+				ifc.PostUp.Add(value);
+			}
+			else if(key == "predown") {
+				ifc.PreDown.Add(value);
+			}
+			else if(key == "postdown") {
+				ifc.PostDown.Add(value);
+			}
 			else if(key == "uuid") {
 				if(value.IsEmpty() || value == Helper::GetVoidUuid()) {
 					value = Helper::GetNewUuid();

@@ -19,7 +19,7 @@ TunnelAppEditor::TunnelAppEditor()
 		if(n1 < n2) { // added
 			for(int i = 0; i < n2; ++i) {
 				auto m = array_.Get(i, 0).ToString();
-				if(Apps_.Find(m) < 0) {
+				if(Apps_.GetIndex(m) < 0) {
 					Apps_.Add(m);
 					array_.Sort();
 					WhenArrayAction();
@@ -40,25 +40,13 @@ TunnelAppEditor::TunnelAppEditor()
 		if(Apps_.GetCount() > array_.GetCount()) { // removed
 			for(auto& app : Apps_) {
 				if(array_.Find(app, 0) < 0) {
-					Apps_.RemoveKey(app);
+					Apps_.Remove(Apps_.GetIndex(app));
 					WhenArrayAction();
 					break;
 				}
 			}
 		}
 	};
-}
-
-const String TunnelAppEditor::ToString() const
-{
-	String str{};
-	for(int i = 0; i < Apps_.GetCount(); ++i) {
-		str << Apps_[i];
-		if(i != Apps_.GetCount() - 1) {
-			str << ", ";
-		}
-	}
-	return pick(str);
 }
 
 void TunnelAppEditor::Add(const String& app)

@@ -21,7 +21,7 @@ MainWindow::MainWindow()
 	, tray_(MakeOne<TrayIcon>())
 {
 	CtrlLayout(*this);
-	Zoomable().Sizeable().Icon(AppIcons::Icon16, AppIcons::Icon24);
+	Zoomable().Sizeable().Icon(AppIcons::Icon16D(), AppIcons::Icon24D());
 	SetMinSize(Zsz(800, 540));
 	WhenClose = [&] { Hide(); };
 
@@ -49,7 +49,7 @@ MainWindow::MainWindow()
 
 	tray_->WhenBar = [&](Bar& bar) { ShowTrayMenu(bar); };
 	tray_->WhenLeftDown = [&] { ShowWindow(); };
-	tray_->Icon(AppIcons::Icon16);
+	tray_->Icon(AppIcons::Icon16D());
 
 	SetTitle();
 
@@ -95,6 +95,8 @@ void MainWindow::SetTitle()
 		if(id.IsNull()) {
 			Title("Disconnected");
 			tray_->Tip("Disconnected");
+			Icon(AppIcons::Icon16D(), AppIcons::Icon24D());
+			tray_->Icon(AppIcons::Icon16D());
 			return;
 		}
 
@@ -129,6 +131,9 @@ void MainWindow::SetTitle()
 		if(this->IsShown()) {
 			Title(str);
 		}
+
+		Icon(AppIcons::Icon16C(), AppIcons::Icon24C());
+		tray_->Icon(AppIcons::Icon16C());
 
 		auto tip = str;
 		tip.Replace(" | ", "\n");

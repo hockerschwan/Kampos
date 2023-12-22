@@ -27,6 +27,7 @@ public:
 
 private:
 	void Read();
+	void Log(const String& str);
 
 	void SetUUID(const Id& uuid)
 	{

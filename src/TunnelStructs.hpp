@@ -8,10 +8,14 @@ using namespace Upp;
 
 class TunnelInterface : Moveable<TunnelInterface>, DeepCopyOption<TunnelInterface> {
 public:
-	Index<String> Address{};
-	Index<String> DNS{};
+	Array<String> Address{};
+	Array<String> DNS{};
 	Value MTU = 0;
 	String PrivateKey{};
+	Array<String> PreUp{};
+	Array<String> PostUp{};
+	Array<String> PreDown{};
+	Array<String> PostDown{};
 
 	Id UUID = Id(Helper::GetVoidUuid()); // # UUID = 00000000-0000-...
 	String Name{};                       // # Name = tunnel1
@@ -25,6 +29,10 @@ public:
 		PrivateKey = clone(x.PrivateKey);
 		UUID = x.UUID;
 		Name = x.Name;
+		PreUp = clone(x.PreUp);
+		PostUp = clone(x.PostUp);
+		PreDown = clone(x.PreDown);
+		PostDown = clone(x.PostDown);
 	};
 
 	String ToString() const
@@ -41,6 +49,23 @@ public:
 		}
 
 		str << "\nMTU = " << MTU.ToString() << "\nPrivateKey = " << PrivateKey << "\n";
+
+		for(const auto& cmd : PreUp) {
+			str << "PreUp = " << cmd << "\n";
+		}
+
+		for(const auto& cmd : PostUp) {
+			str << "PostUp = " << cmd << "\n";
+		}
+
+		for(const auto& cmd : PreDown) {
+			str << "PreDown = " << cmd << "\n";
+		}
+
+		for(const auto& cmd : PostDown) {
+			str << "PostDown = " << cmd << "\n";
+		}
+
 		return str;
 	};
 
@@ -52,10 +77,10 @@ public:
 
 class TunnelPeer : Moveable<TunnelPeer>, DeepCopyOption<TunnelPeer> {
 public:
-	SortedIndex<String> AllowedApps{};
-	Index<String> AllowedIPs{};
-	SortedIndex<String> DisallowedApps{};
-	Index<String> DisallowedIPs{};
+	Array<String> AllowedApps{};
+	Array<String> AllowedIPs{};
+	Array<String> DisallowedApps{};
+	Array<String> DisallowedIPs{};
 	String Endpoint{};
 	Value PersistentKeepalive = 0;
 	String PresharedKey{};

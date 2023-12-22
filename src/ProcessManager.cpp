@@ -40,6 +40,11 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 	cmd << Helper::TunnelsPath() << cfg.Interface.Name << ".conf\" ";
 	cmd << "-log-level " << gConfigManager->Load("WireSockLogLevel", "none") << " -lac";
 
+	for(const auto& cmd : cfg.Interface.PreUp) {
+		auto str = Sys(cmd);
+		Log(str);
+	}
+
 	process_.Attach(new LocalProcess(cmd));
 	thread_.Create();
 	if(!thread_->RunNice([&] { Read(); })) {
@@ -50,6 +55,25 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 	gLogger->Log(String("Client spawned: connecting to ") << cfg.Interface.Name);
 	SetUUID(uuid);
 	Started();
+
+	Thread t{};
+	t.Run([&] {
+		t.Sleep(200);
+		if(uuid_.IsNull()) {
+			return;
+		}
+
+		TunnelConfig cfg{};
+		if(!gTunnelsManager->GetConfig(uuid_, cfg)) {
+			return;
+		}
+
+		for(const auto& cmd : cfg.Interface.PostUp) {
+			auto str = Sys(cmd);
+			Log(str);
+		}
+	});
+
 	return true;
 }
 
@@ -94,10 +118,41 @@ void ProcessManager::Read()
 		cv_.Wait(mThread_, 100);
 	}
 
+	TunnelConfig cfg{};
+	auto b = gTunnelsManager->GetConfig(uuid_, cfg);
+	if(b) {
+		for(const auto& cmd : cfg.Interface.PreDown) {
+			auto str = Sys(cmd);
+			gLogger->Log(str);
+		}
+	}
+
 	gLogger->Log("Client terminated");
 	SetUUID(String::GetVoid());
 	if(gMainWindow && !gMainWindow->IsShutdown()) {
 		Stopped();
 	}
+
+	if(b) {
+		for(const auto& cmd : cfg.Interface.PostDown) {
+			auto str = Sys(cmd);
+			gLogger->Log(str);
+		}
+	}
+
 	return;
+}
+
+void ProcessManager::Log(const String& str)
+{
+	if(str.IsEmpty()) {
+		return;
+	}
+
+	for(auto& line : Split(str, "\r\n")) {
+		line = TrimRight(line);
+		if(!line.IsEmpty()) {
+			gLogger->Log(line);
+		}
+	}
 }

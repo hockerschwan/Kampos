@@ -82,9 +82,19 @@ INITBLOCK
 GUI_APP_MAIN
 {
 	if(!gProcessManager->ClientInstalled()) {
-		auto message = String() << t_("Could not find") << " wiresock-client.exe&" << t_("Download from");
-		message << " [^https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/^ " << t_("here") << "]";
-		if(Prompt(BEEP_EXCLAMATION, Ctrl::GetAppName(), CtrlImg::exclamation(), message, true, t_("Continue"), t_("Exit")) != 1) {
+		auto url = "https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/";
+		auto message = String() << t_("Could not find") << " wiresock-client.exe&";
+		message << t_("Download from") << " [^" << url << "^ " << t_("here") << "]&";
+		message << t_("If it is installed, check the settings");
+		auto res = Prompt(BEEP_EXCLAMATION, GetAppName(), CtrlImg::exclamation(), message, false, t_("Continue"), t_("Download"),
+		                  t_("Exit"));
+		switch(res) {
+		case 1:
+			break;
+		case 0:
+			LaunchWebBrowser(url);
+			Thread::Sleep(50);
+		case -1:
 			Exit(-3);
 		}
 	}

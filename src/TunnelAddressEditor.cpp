@@ -12,32 +12,12 @@ TunnelAddressEditor::TunnelAddressEditor()
 	array_.AddColumn("Address").Edit(edit_);
 	array_.WhenAcceptEdit = [&] { AcceptEdit(); };
 	array_.WhenArrayAction = [&] {
-		if(Addresses_.GetCount() > array_.GetCount()) { // removed
-			for(auto& addr : Addresses_) {
-				if(array_.Find(addr, 0) < 0) {
-					Addresses_.RemoveKey(addr);
-					WhenArrayAction();
-					break;
-				}
-			}
+		Addresses_.Clear();
+		for(int i = 0; i < array_.GetCount(); ++i) {
+			Addresses_.Add(array_.Get(i, 0).ToString());
 		}
+		WhenArrayAction();
 	};
-	array_.WhenUpdateRow = [&] { WhenAction(); };
-	array_.WhenDrag = [&] { Drag(); };
-	array_.WhenDrop = [&](PasteClip& clip) { Drop(clip); };
-	array_.WhenDropInsert = [&](int i, PasteClip& clip) { DropInsert(i, clip); };
-}
-
-const String TunnelAddressEditor::ToString() const
-{
-	String str{};
-	for(int i = 0; i < Addresses_.GetCount(); ++i) {
-		str << Addresses_[i];
-		if(i != Addresses_.GetCount() - 1) {
-			str << ", ";
-		}
-	}
-	return pick(str);
 }
 
 void TunnelAddressEditor::Add(const String& address)
@@ -67,9 +47,8 @@ void TunnelAddressEditor::AcceptEdit()
 	if(n1 < n2) { // added
 		for(int i = 0; i < n2; ++i) {
 			auto m = array_.Get(i, 0).ToString();
-			if(Addresses_.Find(m) < 0) {
+			if(Addresses_.GetIndex(m) < 0) {
 				Addresses_.Add(m);
-				array_.Sort();
 				WhenArrayAction();
 				break;
 			}

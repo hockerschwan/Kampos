@@ -33,6 +33,8 @@ private:
 	Id colName_{"Name"};
 
 	One<TunnelEditor> editor_;
+
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> timeConnect_{};
 };
 
 #endif
