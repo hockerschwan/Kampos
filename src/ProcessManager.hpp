@@ -35,9 +35,6 @@ private:
 		uuid_ = uuid;
 	};
 
-	void Started() { WhenStarted(uuid_); };
-	void Stopped() { WhenStopped(); };
-
 	One<LocalProcess> process_{};
 	One<Thread> thread_{};
 	ConditionVariable cv_{};

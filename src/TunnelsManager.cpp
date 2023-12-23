@@ -356,3 +356,10 @@ TunnelConfig TunnelsManager::Parse(const String& str) const
 
 	return cfg;
 }
+
+void TunnelsManager::Sort()
+{
+	mutex_.Enter();
+	StableSortByValue(tunnels_);
+	mutex_.Leave();
+}

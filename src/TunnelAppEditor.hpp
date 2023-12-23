@@ -16,6 +16,8 @@ public:
 	Event<> WhenArrayAction;
 
 private:
+	void AcceptEdit();
+
 	Array<String> Apps_{};
 
 	EditField edit_;

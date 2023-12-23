@@ -12,12 +12,15 @@ TunnelAddressEditor::TunnelAddressEditor()
 	array_.AddColumn("Address").Edit(edit_);
 	array_.WhenAcceptEdit = [&] { AcceptEdit(); };
 	array_.WhenArrayAction = [&] {
-		Addresses_.Clear();
-		for(int i = 0; i < array_.GetCount(); ++i) {
-			Addresses_.Add(array_.Get(i, 0).ToString());
+		if(Addresses_.GetCount() != array_.GetCount()) {
+			Addresses_.Clear();
+			for(int i = 0; i < array_.GetCount(); ++i) {
+				Addresses_.Add(array_.Get(i, 0).ToString());
+			}
+			WhenArrayAction();
 		}
-		WhenArrayAction();
 	};
+	array_.WhenUpdateRow = [&] { AcceptEdit(); };
 }
 
 void TunnelAddressEditor::Add(const String& address)
@@ -37,14 +40,13 @@ void TunnelAddressEditor::AcceptEdit()
 	auto n1 = Addresses_.GetCount();
 	auto n2 = array_.GetCount();
 
-	// remove empty
-	for(int i = n2 - 1; i >= 0; --i) {
-		if(array_.Get(i, 0).ToString().IsEmpty()) {
-			array_.Remove(i);
+	if(n1 < n2) {
+		for(int i = n2 - 1; i >= 0; --i) { // remove empty
+			if(array_.Get(i, 0).ToString().IsEmpty()) {
+				array_.Remove(i);
+			}
 		}
-	}
 
-	if(n1 < n2) { // added
 		for(int i = 0; i < n2; ++i) {
 			auto m = array_.Get(i, 0).ToString();
 			if(Addresses_.GetIndex(m) < 0) {
@@ -54,7 +56,7 @@ void TunnelAddressEditor::AcceptEdit()
 			}
 		}
 	}
-	else if(n1 == n2) { // modified
+	else if(n1 == n2) {
 		Addresses_.Clear();
 		for(int i = 0; i < n2; ++i) {
 			Addresses_.Add(array_.Get(i, 0));

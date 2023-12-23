@@ -1,8 +1,10 @@
 #include "Logger.hpp"
 #include "NetworkMonitor.hpp"
+#include "ProcessManager.hpp"
 #include <iphlpapi.h>
 
 extern std::unique_ptr<Logger> gLogger;
+extern std::unique_ptr<ProcessManager> gProcessManager;
 
 bool NetworkMonitor::Start()
 {
@@ -124,7 +126,9 @@ void NetworkMonitor::Read()
 				bitsRecvOld = virtualAdapter.dwInOctets;
 				bitsSentOld = virtualAdapter.dwOutOctets;
 			}
-			WhenBitRate(bitsRecv, bitsSent);
+			if(!gProcessManager->GetCurrentId().IsNull()) {
+				WhenBitRate(bitsRecv, bitsSent);
+			}
 		}
 
 		cv_.Wait(mThread_, 1000);

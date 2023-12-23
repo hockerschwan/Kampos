@@ -26,7 +26,7 @@ public:
 private:
 	void ScanFiles();
 	TunnelConfig Parse(const String& str) const;
-	void Sort() { StableSortByValue(tunnels_); };
+	void Sort();
 
 	ArrayMap<Id, TunnelConfig> tunnels_{};
 

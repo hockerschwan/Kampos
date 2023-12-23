@@ -16,7 +16,14 @@ TunnelsPage::TunnelsPage()
 		array_.AutoHideSb().HorzGrid(false).VertGrid(false).SetLineCy(Zx(26)); // 28 @100%
 
 		array_.AddColumn(colId_, String::GetVoid()).HeaderTab().Hide();
-		array_.AddColumn(colIcon_, String::GetVoid()).HeaderTab().Fixed(Zx(26)).SetMargin(0);
+		array_.AddColumn(colIcon_, String::GetVoid())
+			.With([](One<Ctrl>& x) {
+				auto& img = x.Create<ImageCtrl>();
+				img.SetImage(Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19)))).Hide();
+			})
+			.HeaderTab()
+			.Fixed(Zx(26))
+			.SetMargin(0);
 		array_.AddColumn(colName_, "Name");
 
 		array_.WhenBar = [&](Bar& bar) { ShowMenu(bar); };
@@ -201,21 +208,39 @@ void TunnelsPage::ScanTunnels()
 		idOld = array_.Get(array_.GetCursor(), colId_).ToString();
 	}
 
-	array_.Clear();
-
-	auto current = gProcessManager->GetCurrentId();
-
-	auto font = GetStdFont().Height(Zx(14));
-
+	bool b = false;
 	auto tunnels = gTunnelsManager->GetTunnels();
-	for(const auto& item : ~(tunnels)) {
-		auto& id = item.key;
-		auto name = item.value.Interface.Name;
-		auto img = id == current ? Image(Rescale(AppIcons::Connect(), Zx(19), Zx(19))) : Null;
-		array_.Add(id.ToString(), img, AttrText(name).SetFont(font)); // 20 @100%
+	for(int i = 0; i < tunnels.GetCount(); ++i) {
+		if(tunnels[i].Interface.UUID.ToString() != array_.Get(i, colId_)) {
+			b = true;
+			break;
+		}
+	}
+	if(b) {
+		array_.Clear();
+		auto font = GetStdFont().Height(Zx(14));
+		auto tunnels = gTunnelsManager->GetTunnels();
+		for(const auto& item : ~(tunnels)) {
+			auto& id = item.key;
+			auto name = item.value.Interface.Name;
+			array_.Add(id.ToString(), Null,
+			           AttrText(name).SetFont(font)); // 20 @100%
+		}
+		array_.RefreshLayoutDeep();
 	}
 
-	array_.RefreshLayoutDeep();
+	auto current = gProcessManager->GetCurrentId();
+	for(int i = 0; i < array_.GetCount(); ++i) {
+		auto id = array_.Get(i, colId_).ToString();
+		auto* img = (ImageCtrl*)array_.GetCtrl(i, colIcon_);
+		if(current.IsNull()) {
+			img->Hide();
+		}
+		else {
+			img->Show(id == current.ToString());
+			img->Refresh();
+		}
+	}
 
 	if(!idOld.IsNull()) {
 		Select(idOld);
@@ -240,7 +265,6 @@ void TunnelsPage::Connect(const Id& uuid)
 		return;
 	}
 
-	ScanTunnels();
 	Select(uuid);
 }
 

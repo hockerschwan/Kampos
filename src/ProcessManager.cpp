@@ -53,21 +53,21 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 	}
 
 	gLogger->Log(String("Client spawned: connecting to ") << cfg.Interface.Name);
-	SetUUID(uuid);
-	Started();
 
 	Thread t{};
-	t.Run([&] {
-		t.Sleep(200);
-		if(uuid_.IsNull()) {
+	t.Run([&, uuid] {
+		t.Sleep(250);
+		if(process_.IsEmpty() || !process_->IsRunning()) {
 			return;
 		}
+		SetUUID(uuid);
 
 		TunnelConfig cfg{};
 		if(!gTunnelsManager->GetConfig(uuid_, cfg)) {
 			return;
 		}
 
+		WhenStarted(uuid_);
 		for(const auto& cmd : cfg.Interface.PostUp) {
 			auto str = Sys(cmd);
 			Log(str);
@@ -117,6 +117,8 @@ void ProcessManager::Read()
 
 		cv_.Wait(mThread_, 100);
 	}
+	process_.Clear();
+	SetUUID(String::GetVoid());
 
 	TunnelConfig cfg{};
 	auto b = gTunnelsManager->GetConfig(uuid_, cfg);
@@ -128,9 +130,8 @@ void ProcessManager::Read()
 	}
 
 	gLogger->Log("Client terminated");
-	SetUUID(String::GetVoid());
 	if(gMainWindow && !gMainWindow->IsShutdown()) {
-		Stopped();
+		WhenStopped();
 	}
 
 	if(b) {
