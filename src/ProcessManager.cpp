@@ -47,7 +47,7 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 
 	process_.Attach(new LocalProcess(cmd));
 	thread_.Create();
-	if(!thread_->RunNice([&] { Read(); })) {
+	if(!thread_->RunNice([&, uuid] { Read(uuid); })) {
 		SetUUID(String::GetVoid());
 		return false;
 	}
@@ -94,7 +94,7 @@ bool ProcessManager::Stop()
 	return process_.IsEmpty() && (thread_.IsEmpty() || !thread_->IsOpen());
 }
 
-void ProcessManager::Read()
+void ProcessManager::Read(const Id& uuid)
 {
 	RegExp re("^([\\d -:]{20}?)");
 	String out{};
@@ -121,11 +121,11 @@ void ProcessManager::Read()
 	SetUUID(String::GetVoid());
 
 	TunnelConfig cfg{};
-	auto b = gTunnelsManager->GetConfig(uuid_, cfg);
+	auto b = gTunnelsManager->GetConfig(uuid, cfg);
 	if(b) {
 		for(const auto& cmd : cfg.Interface.PreDown) {
 			auto str = Sys(cmd);
-			gLogger->Log(str);
+			Log(str);
 		}
 	}
 
@@ -137,7 +137,7 @@ void ProcessManager::Read()
 	if(b) {
 		for(const auto& cmd : cfg.Interface.PostDown) {
 			auto str = Sys(cmd);
-			gLogger->Log(str);
+			Log(str);
 		}
 	}
 

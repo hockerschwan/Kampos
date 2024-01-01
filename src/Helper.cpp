@@ -40,8 +40,10 @@ const String Helper::GetTime()
 	SYSTEMTIME t;
 	GetLocalTime(&t);
 
-	char buf[13] = {0};
-	snprintf(buf, 13, "%02d:%02d:%02d.%03d", t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+	char buf[24] = {0};
+	snprintf(buf, 24, "%04d-%02d-%02d %02d:%02d:%02d.%03d", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond,
+	         t.wMilliseconds);
+
 	return String(buf);
 }
 

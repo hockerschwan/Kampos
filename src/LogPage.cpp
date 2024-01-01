@@ -12,7 +12,7 @@ LogPage::LogPage()
 		arrayCtrl_.AddColumn("Timestamp");
 		arrayCtrl_.AddColumn("Message");
 
-		auto w = Helper::CalcSize("00:00:00.000", arrayCtrl_.HeaderTab(0).GetFont(), 10);
+		auto w = Helper::CalcSize("0000-00-00 00:00:00.000", arrayCtrl_.HeaderTab(0).GetFont(), 10);
 		arrayCtrl_.HeaderTab(0).Fixed(w + 16).AlignCenter();
 
 		arrayCtrl_.WhenBar = [&](Bar& bar) {

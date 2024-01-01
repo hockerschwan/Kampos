@@ -5,6 +5,7 @@ const char* CommandDnDName = "CommandDragAndDrop";
 TunnelCommandEditor::TunnelCommandEditor()
 {
 	CtrlLayout(*this);
+
 	Clear();
 	array_.AddColumn("Command").Edit(edit_);
 	array_.WhenAcceptEdit = [&] { AcceptEdit(); };
@@ -18,6 +19,38 @@ TunnelCommandEditor::TunnelCommandEditor()
 		}
 	};
 	array_.WhenUpdateRow = [&] { AcceptEdit(); };
+
+	btnCopy_.SetImage(Rescale(AppIcons::Copy(), Zx(15), Zx(15)));
+	btnCopy_.WhenAction = [&] {
+		String str{};
+		for(int i = 0; i < Commands_.GetCount(); ++i) {
+			str << Commands_[i];
+			if(i != Commands_.GetCount() - 1) {
+				str << ", ";
+			}
+		}
+		AppendClipboardText(pick(str));
+	};
+
+	btnPaste_.SetImage(Rescale(AppIcons::Paste(), Zx(15), Zx(15)));
+	btnPaste_.WhenAction = [&] {
+		auto str = ReadClipboardText();
+		if(str.IsEmpty()) {
+			return;
+		}
+
+		for(auto& app : Split(str, ",")) {
+			app = TrimBoth(app);
+			if(app.IsEmpty() || array_.Find(app) >= 0) {
+				continue;
+			}
+			Commands_.Add(app);
+			array_.Add(app);
+		}
+		if(Commands_.GetCount() > 0) {
+			WhenArrayAction();
+		}
+	};
 }
 
 void TunnelCommandEditor::Add(const String& command)

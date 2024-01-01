@@ -3,6 +3,7 @@
 TunnelAppEditor::TunnelAppEditor()
 {
 	CtrlLayout(*this);
+
 	Clear();
 	array_.AddColumn("Address").Edit(edit_);
 	array_.WhenAcceptEdit = [&] { AcceptEdit(); };
@@ -13,6 +14,40 @@ TunnelAppEditor::TunnelAppEditor()
 				Apps_.Add(array_.Get(i, 0).ToString());
 			}
 			Sort(Apps_);
+			WhenArrayAction();
+		}
+	};
+
+	btnCopy_.SetImage(Rescale(AppIcons::Copy(), Zx(15), Zx(15)));
+	btnCopy_.WhenAction = [&] {
+		String str{};
+		for(int i = 0; i < Apps_.GetCount(); ++i) {
+			str << Apps_[i];
+			if(i != Apps_.GetCount() - 1) {
+				str << ", ";
+			}
+		}
+		AppendClipboardText(pick(str));
+	};
+
+	btnPaste_.SetImage(Rescale(AppIcons::Paste(), Zx(15), Zx(15)));
+	btnPaste_.WhenAction = [&] {
+		auto str = ReadClipboardText();
+		if(str.IsEmpty()) {
+			return;
+		}
+
+		for(auto& app : Split(str, ",")) {
+			app = TrimBoth(app);
+			if(app.IsEmpty() || array_.Find(app) >= 0) {
+				continue;
+			}
+			Apps_.Add(app);
+			array_.Add(app);
+		}
+		if(Apps_.GetCount() > 0) {
+			Sort(Apps_);
+			array_.Sort();
 			WhenArrayAction();
 		}
 	};

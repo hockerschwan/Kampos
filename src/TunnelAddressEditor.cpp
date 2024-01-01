@@ -8,6 +8,7 @@ const char* AddressDnDName = "AddressDragAndDrop";
 TunnelAddressEditor::TunnelAddressEditor()
 {
 	CtrlLayout(*this);
+
 	Clear();
 	array_.AddColumn("Address").Edit(edit_);
 	array_.WhenAcceptEdit = [&] { AcceptEdit(); };
@@ -21,6 +22,38 @@ TunnelAddressEditor::TunnelAddressEditor()
 		}
 	};
 	array_.WhenUpdateRow = [&] { AcceptEdit(); };
+
+	btnCopy_.SetImage(Rescale(AppIcons::Copy(), Zx(15), Zx(15)));
+	btnCopy_.WhenAction = [&] {
+		String str{};
+		for(int i = 0; i < Addresses_.GetCount(); ++i) {
+			str << Addresses_[i];
+			if(i != Addresses_.GetCount() - 1) {
+				str << ", ";
+			}
+		}
+		AppendClipboardText(pick(str));
+	};
+
+	btnPaste_.SetImage(Rescale(AppIcons::Paste(), Zx(15), Zx(15)));
+	btnPaste_.WhenAction = [&] {
+		auto str = ReadClipboardText();
+		if(str.IsEmpty()) {
+			return;
+		}
+
+		for(auto& app : Split(str, ",")) {
+			app = TrimBoth(app);
+			if(app.IsEmpty() || array_.Find(app) >= 0) {
+				continue;
+			}
+			Addresses_.Add(app);
+			array_.Add(app);
+		}
+		if(Addresses_.GetCount() > 0) {
+			WhenArrayAction();
+		}
+	};
 }
 
 void TunnelAddressEditor::Add(const String& address)

@@ -1,8 +1,16 @@
+description "WireSock client GUI\377";
+
 uses
 	CtrlLib,
 	GridLayoutCtrl,
 	AutoScroller,
 	plugin/pcre;
+
+library
+	"iphlpapi version";
+
+options
+	-std=c++17;
 
 file
 	Misc readonly separator,

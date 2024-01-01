@@ -211,20 +211,19 @@ void TunnelsPage::ScanTunnels()
 	bool b = false;
 	auto tunnels = gTunnelsManager->GetTunnels();
 	for(int i = 0; i < tunnels.GetCount(); ++i) {
-		if(tunnels[i].Interface.UUID.ToString() != array_.Get(i, colId_)) {
+		if(tunnels[i].Interface.UUID.ToString() != array_.Get(i, colId_).ToString() ||
+		   tunnels[i].Interface.Name != array_.Get(i, colName_).ToString()) {
 			b = true;
 			break;
 		}
 	}
 	if(b) {
 		array_.Clear();
-		auto font = GetStdFont().Height(Zx(14));
 		auto tunnels = gTunnelsManager->GetTunnels();
 		for(const auto& item : ~(tunnels)) {
 			auto& id = item.key;
 			auto name = item.value.Interface.Name;
-			array_.Add(id.ToString(), Null,
-			           AttrText(name).SetFont(font)); // 20 @100%
+			array_.Add(id.ToString(), Null, AttrText(name).SetFont(StdFontZ(14)));
 		}
 		array_.RefreshLayoutDeep();
 	}

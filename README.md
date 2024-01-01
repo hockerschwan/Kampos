@@ -1,16 +1,11 @@
-# Kampos
-[WireSock client](https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/) GUI on Windows
+[WireSock client](https://www.wiresock.net/wiresock-vpn-client/download-wiresock-vpn-client/) GUI on Windows using [U++](https://www.ultimatepp.org/index.html)
 
 ## Features
 - (WireSock) Per app/folder split tunnel
-- Rule based auto connection (SSID, Any Ethernet/ Wi-Fi)
-
-## Building
-Download [U++](https://www.ultimatepp.org/www$uppweb$download$en-us.html)
-
-Common C++ options: -std=c++17
-
-Common link options: -lversion -lIphlpapi
+- (WireSock) Bind virtual network interface to torrent client
+- Rule based auto connection (SSID, Any Ethernet/Wi-Fi)
+- Commands (PreUp etc.)
+- Show bitrate
 
 ## Credits
 Icons: [Basic Rounded Filled

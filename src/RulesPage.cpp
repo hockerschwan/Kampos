@@ -102,13 +102,11 @@ void RulesPage::ScanRules()
 
 	auto current = gRuleManager->GetCurrentId();
 
-	auto font = GetStdFont().Height(Zx(14));
-
 	auto rules = gRuleManager->GetRules();
 	for(const auto& item : ~(rules)) {
 		auto& id = item.key;
 		auto name = item.value.Name;
-		array_.Add(id.ToString(), Null, AttrText(name).SetFont(font));
+		array_.Add(id.ToString(), Null, AttrText(name).SetFont(StdFontZ(14)));
 	}
 
 	RefreshImage();

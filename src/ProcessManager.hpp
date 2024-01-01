@@ -26,7 +26,7 @@ public:
 	Event<> WhenStopped;
 
 private:
-	void Read();
+	void Read(const Id& uuid);
 	void Log(const String& str);
 
 	void SetUUID(const Id& uuid)

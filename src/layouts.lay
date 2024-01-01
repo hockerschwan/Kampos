@@ -81,18 +81,24 @@ LAYOUT(TunnelPeerEditorLayout, 500, 356)
 END_LAYOUT
 
 LAYOUT(TunnelAddressEditorLayout, 208, 120)
-	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).Moving(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnCopy_, Tip(t_("Copy all")).RightPosZ(32, 20).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnPaste_, Tip(t_("Paste")).RightPosZ(4, 20).TopPosZ(4, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).Moving(true).HSizePosZ(4, 4).VSizePosZ(24, 0))
 END_LAYOUT
 
 LAYOUT(TunnelAppEditorLayout, 208, 120)
-	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnCopy_, Tip(t_("Copy all")).RightPosZ(32, 20).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnPaste_, Tip(t_("Paste")).RightPosZ(4, 20).TopPosZ(4, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).HSizePosZ(4, 4).VSizePosZ(24, 0))
 END_LAYOUT
 
-LAYOUT(TunnelCommandEditorLayout, 208, 60)
-	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(0, 20))
-	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).Moving(true).HSizePosZ(4, 4).VSizePosZ(20, 0))
+LAYOUT(TunnelCommandEditorLayout, 208, 64)
+	ITEM(Upp::StaticText, textTitle_, LeftPosZ(4, 80).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnCopy_, Tip(t_("Copy all")).RightPosZ(32, 20).TopPosZ(4, 20))
+	ITEM(Upp::Button, btnPaste_, Tip(t_("Paste")).RightPosZ(4, 20).TopPosZ(4, 20))
+	ITEM(Upp::ArrayCtrl, array_, Header(false).Appending(true).Removing(true).Moving(true).HSizePosZ(4, 4).VSizePosZ(24, 0))
 END_LAYOUT
 
 LAYOUT(RuleLayout, 360, 280)
