@@ -1,8 +1,8 @@
 9999 ICON "icon.ico"
 
 1 versionINFO
-FILEversion     0,1,0,0
-PRODUCTversion  0,1,0,0
+FILEversion     0,1,1,0
+PRODUCTversion  0,1,1,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
@@ -10,10 +10,10 @@ BEGIN
     BEGIN
       VALUE "CompanyName", "Kampos"
       VALUE "FileDescription", "GUI for WireSock VPN client"
-      VALUE "Fileversion", "0.1.0"
+      VALUE "Fileversion", "0.1.1"
       VALUE "LegalCopyright", "Copyright (C) 2024"
       VALUE "ProductName", "Kampos"
-      VALUE "Productversion", "0.1.0"
+      VALUE "Productversion", "0.1.1"
     END
   END
 
