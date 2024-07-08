@@ -56,8 +56,6 @@ file
 	src/TunnelAddressEditor.hpp,
 	src/TunnelAppEditor.cpp,
 	src/TunnelAppEditor.hpp,
-	src/TunnelCommandEditor.cpp,
-	src/TunnelCommandEditor.hpp,
 	src/TunnelEditor.cpp,
 	src/TunnelEditor.hpp,
 	src/TunnelInterfaceEditor.cpp,

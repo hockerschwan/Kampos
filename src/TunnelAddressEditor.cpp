@@ -16,7 +16,10 @@ TunnelAddressEditor::TunnelAddressEditor()
 		if(Addresses_.GetCount() != array_.GetCount()) {
 			Addresses_.Clear();
 			for(int i = 0; i < array_.GetCount(); ++i) {
-				Addresses_.Add(array_.Get(i, 0).ToString());
+				auto addr = array_.Get(i, 0).ToString();
+				if(!addr.IsEmpty()) {
+					Addresses_.Add(addr);
+				}
 			}
 			WhenArrayAction();
 		}
@@ -73,13 +76,14 @@ void TunnelAddressEditor::AcceptEdit()
 	auto n1 = Addresses_.GetCount();
 	auto n2 = array_.GetCount();
 
-	if(n1 < n2) {
-		for(int i = n2 - 1; i >= 0; --i) { // remove empty
-			if(array_.Get(i, 0).ToString().IsEmpty()) {
-				array_.Remove(i);
-			}
+	// remove empty
+	for(int i = n2 - 1; i >= 0; --i) {
+		if(array_.Get(i, 0).ToString().IsEmpty()) {
+			array_.Remove(i);
 		}
+	}
 
+	if(n1 < n2) {
 		for(int i = 0; i < n2; ++i) {
 			auto m = array_.Get(i, 0).ToString();
 			if(Addresses_.GetIndex(m) < 0) {

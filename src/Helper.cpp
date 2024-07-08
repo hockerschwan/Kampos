@@ -41,8 +41,8 @@ const String Helper::GetTime()
 	GetLocalTime(&t);
 
 	char buf[24] = {0};
-	snprintf(buf, 24, "%04d-%02d-%02d %02d:%02d:%02d.%03d", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond,
-	         t.wMilliseconds);
+	snprintf(buf, 24, "%04d-%02d-%02d %02d:%02d:%02d.%03d", t.wYear, t.wMonth, t.wDay, t.wHour,
+	         t.wMinute, t.wSecond, t.wMilliseconds);
 
 	return String(buf);
 }
@@ -80,4 +80,15 @@ String Helper::FormatWithPrefix(int64 numBefore, double& numAfter)
 
 	numAfter = n;
 	return pick(prefix);
+}
+
+bool Helper::DoesArrayContainsNonEmptyString(const Array<String>& array)
+{
+	for(const auto& str : array) {
+		if(!str.IsEmpty()) {
+			return true;
+		}
+	}
+
+	return false;
 }

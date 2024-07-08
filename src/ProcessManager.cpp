@@ -40,11 +40,6 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 	cmd << Helper::TunnelsPath() << cfg.Interface.Name << ".conf\" ";
 	cmd << "-log-level " << gConfigManager->Load("WireSockLogLevel", "none") << " -lac";
 
-	for(const auto& cmd : cfg.Interface.PreUp) {
-		auto str = Sys(cmd);
-		Log(str);
-	}
-
 	process_.Attach(new LocalProcess(cmd));
 	thread_.Create();
 	if(!thread_->RunNice([&, uuid] { Read(uuid); })) {
@@ -68,10 +63,6 @@ bool ProcessManager::Start(const Id& uuid, bool stop)
 		}
 
 		WhenStarted(uuid_);
-		for(const auto& cmd : cfg.Interface.PostUp) {
-			auto str = Sys(cmd);
-			Log(str);
-		}
 	});
 
 	return true;
@@ -120,25 +111,9 @@ void ProcessManager::Read(const Id& uuid)
 	process_.Clear();
 	SetUUID(String::GetVoid());
 
-	TunnelConfig cfg{};
-	auto b = gTunnelsManager->GetConfig(uuid, cfg);
-	if(b) {
-		for(const auto& cmd : cfg.Interface.PreDown) {
-			auto str = Sys(cmd);
-			Log(str);
-		}
-	}
-
 	gLogger->Log("Client terminated");
 	if(gMainWindow && !gMainWindow->IsShutdown()) {
 		WhenStopped();
-	}
-
-	if(b) {
-		for(const auto& cmd : cfg.Interface.PostDown) {
-			auto str = Sys(cmd);
-			Log(str);
-		}
 	}
 
 	return;

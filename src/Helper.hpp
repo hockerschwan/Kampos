@@ -25,9 +25,11 @@ public:
 	static const String GetTime();
 	static const VectorMap<String, String> ForbiddenChars()
 	{
-		return {{"\\", ""}, {"/", ""}, {":", ""}, {"*", ""}, {"?", ""}, {"\"", ""}, {"<", ""}, {">", ""}, {"|", ""}};
+		return {{"\\", ""}, {"/", ""}, {":", ""}, {"*", ""}, {"?", ""},
+		        {"\"", ""}, {"<", ""}, {">", ""}, {"|", ""}};
 	};
 	static String FormatWithPrefix(IN int64 numBefore, OUT double& numAfter);
+	static bool DoesArrayContainsNonEmptyString(const Array<String>& array);
 };
 
 #endif

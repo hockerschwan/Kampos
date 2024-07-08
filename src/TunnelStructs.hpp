@@ -12,10 +12,10 @@ public:
 	Array<String> DNS{};
 	Value MTU = 0;
 	String PrivateKey{};
-	Array<String> PreUp{};
-	Array<String> PostUp{};
-	Array<String> PreDown{};
-	Array<String> PostDown{};
+	String PreUp{};
+	String PostUp{};
+	String PreDown{};
+	String PostDown{};
 
 	Id UUID = Id(Helper::GetVoidUuid()); // # UUID = 00000000-0000-...
 	String Name{};                       // # Name = tunnel1
@@ -38,32 +38,46 @@ public:
 	String ToString() const
 	{
 		String str{};
-		str << "[Interface]\n# Name = " << Name << "\n# UUID = " << UUID.ToString() << "\nAddress = ";
-		for(int i = 0; i < Address.GetCount(); ++i) {
-			str << Address[i] << (i == Address.GetCount() - 1 ? String::GetVoid() : ", ");
+		str << "[Interface]\n# Name = " << Name << "\n# UUID = " << UUID.ToString();
+
+		if(Helper::DoesArrayContainsNonEmptyString(Address)) {
+			str << "\nAddress = ";
+			for(int i = 0; i < Address.GetCount(); ++i) {
+				if(!Address[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << Address[i];
+				}
+			}
 		}
 
-		str << "\nDNS = ";
-		for(int i = 0; i < DNS.GetCount(); ++i) {
-			str << DNS[i] << (i == DNS.GetCount() - 1 ? String::GetVoid() : ", ");
+		if(Helper::DoesArrayContainsNonEmptyString(DNS)) {
+			str << "\nDNS = ";
+			for(int i = 0; i < DNS.GetCount(); ++i) {
+				if(!DNS[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << DNS[i];
+				}
+			}
 		}
 
-		str << "\nMTU = " << MTU.ToString() << "\nPrivateKey = " << PrivateKey << "\n";
+		str << "\nMTU = " << MTU.ToString();
 
-		for(const auto& cmd : PreUp) {
-			str << "PreUp = " << cmd << "\n";
+		if(!PrivateKey.IsEmpty()) {
+			str << "\nPrivateKey = " << PrivateKey;
 		}
 
-		for(const auto& cmd : PostUp) {
-			str << "PostUp = " << cmd << "\n";
+		if(!PreUp.IsEmpty()) {
+			str << "\nPreUp = " << PreUp;
 		}
 
-		for(const auto& cmd : PreDown) {
-			str << "PreDown = " << cmd << "\n";
+		if(!PostUp.IsEmpty()) {
+			str << "\nPostUp = " << PostUp;
 		}
 
-		for(const auto& cmd : PostDown) {
-			str << "PostDown = " << cmd << "\n";
+		if(!PreDown.IsEmpty()) {
+			str << "\nPreDown = " << PreDown;
+		}
+
+		if(!PostDown.IsEmpty()) {
+			str << "\nPostDown = " << PostDown;
 		}
 
 		return str;
@@ -71,7 +85,8 @@ public:
 
 	bool operator==(const TunnelInterface& rhs) const
 	{
-		return Address == rhs.Address && DNS == rhs.DNS && MTU == rhs.MTU && PrivateKey == rhs.PrivateKey;
+		return Address == rhs.Address && DNS == rhs.DNS && MTU == rhs.MTU &&
+		       PrivateKey == rhs.PrivateKey;
 	};
 };
 
@@ -105,28 +120,58 @@ public:
 	String ToString() const
 	{
 		String str{};
-		str << "[Peer]\n# Name = " << Name << "\nAllowedApps = ";
-		for(int i = 0; i < AllowedApps.GetCount(); ++i) {
-			str << AllowedApps[i] << (i == AllowedApps.GetCount() - 1 ? String::GetVoid() : ", ");
+		str << "[Peer]\n# Name = " << Name;
+
+		if(Helper::DoesArrayContainsNonEmptyString(AllowedApps)) {
+			str << "\nAllowedApps = ";
+			for(int i = 0; i < AllowedApps.GetCount(); ++i) {
+				if(!AllowedApps[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << AllowedApps[i];
+				}
+			}
 		}
 
-		str << "\nAllowedIPs = ";
-		for(int i = 0; i < AllowedIPs.GetCount(); ++i) {
-			str << AllowedIPs[i] << (i == AllowedIPs.GetCount() - 1 ? String::GetVoid() : ", ");
+		if(Helper::DoesArrayContainsNonEmptyString(AllowedIPs)) {
+			str << "\nAllowedIPs = ";
+			for(int i = 0; i < AllowedIPs.GetCount(); ++i) {
+				if(!AllowedIPs[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << AllowedIPs[i];
+				}
+			}
 		}
 
-		str << "\nDisallowedApps = ";
-		for(int i = 0; i < DisallowedApps.GetCount(); ++i) {
-			str << DisallowedApps[i] << (i == DisallowedApps.GetCount() - 1 ? String::GetVoid() : ", ");
+		if(Helper::DoesArrayContainsNonEmptyString(DisallowedApps)) {
+			str << "\nDisallowedApps = ";
+			for(int i = 0; i < DisallowedApps.GetCount(); ++i) {
+				if(!DisallowedApps[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << DisallowedApps[i];
+				}
+			}
 		}
 
-		str << "\nDisallowedIPs = ";
-		for(int i = 0; i < DisallowedIPs.GetCount(); ++i) {
-			str << DisallowedIPs[i] << (i == DisallowedIPs.GetCount() - 1 ? String::GetVoid() : ", ");
+		if(Helper::DoesArrayContainsNonEmptyString(DisallowedIPs)) {
+			str << "\nDisallowedIPs = ";
+			for(int i = 0; i < DisallowedIPs.GetCount(); ++i) {
+				if(!DisallowedIPs[i].IsEmpty()) {
+					str << (i == 0 ? String::GetVoid() : ", ") << DisallowedIPs[i];
+				}
+			}
 		}
 
-		str << "\nEndpoint = " << Endpoint << "\nPersistentKeepalive = " << PersistentKeepalive.ToString();
-		str << "\nPresharedKey = " << PresharedKey << "\nPublicKey = " << PublicKey << "\n";
+		if(!Endpoint.IsEmpty()) {
+			str << "\nEndpoint = " << Endpoint;
+		}
+
+		str << "\nPersistentKeepalive = " << PersistentKeepalive.ToString();
+
+		if(!PresharedKey.IsEmpty()) {
+			str << "\nPresharedKey = " << PresharedKey;
+		}
+
+		if(!PublicKey.IsEmpty()) {
+			str << "\nPublicKey = " << PublicKey;
+		}
+
 		return str;
 	};
 
@@ -151,8 +196,9 @@ public:
 
 	bool operator==(const TunnelPeer& rhs) const
 	{
-		return AllowedApps == rhs.AllowedApps && AllowedIPs == rhs.AllowedIPs && DisallowedApps == rhs.DisallowedApps &&
-		       DisallowedIPs == rhs.DisallowedIPs && Endpoint == rhs.Endpoint && PersistentKeepalive == rhs.PersistentKeepalive &&
+		return AllowedApps == rhs.AllowedApps && AllowedIPs == rhs.AllowedIPs &&
+		       DisallowedApps == rhs.DisallowedApps && DisallowedIPs == rhs.DisallowedIPs &&
+		       Endpoint == rhs.Endpoint && PersistentKeepalive == rhs.PersistentKeepalive &&
 		       PresharedKey == rhs.PresharedKey && PublicKey == rhs.PublicKey;
 	};
 };
@@ -170,18 +216,24 @@ public:
 	String ToString() const
 	{
 		String str{};
-		str << Interface.ToString() << "\n";
+		str << Interface.ToString() << "\n\n";
 		for(const auto& p : Peers) {
-			str << p.ToString() << "\n";
+			str << p.ToString() << "\n\n";
 		}
 		return str;
 	};
 
 	static TunnelConfig GetVoid() { return pick(TunnelConfig()); };
 
-	bool operator<(const TunnelConfig& rhs) const { return ToLower(this->Interface.Name) < ToLower(rhs.Interface.Name); }
+	bool operator<(const TunnelConfig& rhs) const
+	{
+		return ToLower(this->Interface.Name) < ToLower(rhs.Interface.Name);
+	}
 
-	bool operator==(const TunnelConfig& rhs) const { return Interface == rhs.Interface && Peers == rhs.Peers; };
+	bool operator==(const TunnelConfig& rhs) const
+	{
+		return Interface == rhs.Interface && Peers == rhs.Peers;
+	};
 
 	bool operator!=(const TunnelConfig& rhs) { return !(*this == rhs); };
 };

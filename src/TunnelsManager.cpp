@@ -77,8 +77,8 @@ bool TunnelsManager::Import(const Array<String>& paths)
 		}
 
 		if(cfg.Interface.Name.IsEmpty()) {
-			auto t = TimeFromUTC(
-				std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			auto ep = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
+			auto t = TimeFromUTC(ep.count());
 
 			auto name = GetFileName(path);
 			name.TrimEnd(GetFileExtPos(path));
@@ -151,7 +151,8 @@ bool TunnelsManager::Save(const Id& uuid, const TunnelConfig& config, bool scan)
 		cfg = clone(config);
 	}
 
-	auto res = SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", config.ToString());
+	auto res =
+		SaveFile(Helper::TunnelsPath() << config.Interface.Name << ".conf", config.ToString());
 
 	mutex_.Leave();
 
@@ -277,16 +278,16 @@ TunnelConfig TunnelsManager::Parse(const String& str) const
 				ifc.PrivateKey = value;
 			}
 			else if(key == "preup") {
-				ifc.PreUp.Add(value);
+				ifc.PreUp = value;
 			}
 			else if(key == "postup") {
-				ifc.PostUp.Add(value);
+				ifc.PostUp = value;
 			}
 			else if(key == "predown") {
-				ifc.PreDown.Add(value);
+				ifc.PreDown = value;
 			}
 			else if(key == "postdown") {
-				ifc.PostDown.Add(value);
+				ifc.PostDown = value;
 			}
 			else if(key == "uuid") {
 				if(value.IsEmpty() || value == Helper::GetVoidUuid()) {
