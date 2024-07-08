@@ -11,7 +11,10 @@ TunnelAppEditor::TunnelAppEditor()
 		if(Apps_.GetCount() != array_.GetCount()) {
 			Apps_.Clear();
 			for(int i = 0; i < array_.GetCount(); ++i) {
-				Apps_.Add(array_.Get(i, 0).ToString());
+				auto app = array_.Get(i, 0).ToString();
+				if(!app.IsEmpty()) {
+					Apps_.Add(app);
+				}
 			}
 			Sort(Apps_);
 			WhenArrayAction();

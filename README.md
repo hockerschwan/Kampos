@@ -3,10 +3,9 @@
 ## Features
 - (WireSock) Per app/folder split tunnel
 - (WireSock) Bind virtual network interface to torrent client
+- (WireSock) Commands (PreUp etc.)
 - Rule based auto connection (SSID, Any Ethernet/Wi-Fi)
-- Commands (PreUp etc.)
 - Show bitrate
-
+ 
 ## Credits
-Icons: [Basic Rounded Filled
-by Freepik](https://www.freepik.com/author/freepik/icons/basic-rounded-filled_5?t=f)
+Icons: [Basic Rounded Filled by Freepik](https://www.freepik.com/author/freepik/icons/basic-rounded-filled_5?t=f)

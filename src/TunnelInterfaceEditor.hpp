@@ -2,7 +2,6 @@
 #define _TunnelInterfaceEditor_hpp_
 
 #include "TunnelAddressEditor.hpp"
-#include "TunnelCommandEditor.hpp"
 #include "TunnelStructs.hpp"
 #include "common.hpp"
 
@@ -20,10 +19,6 @@ private:
 
 	One<TunnelAddressEditor> addresses_;
 	One<TunnelAddressEditor> dns_;
-	One<TunnelCommandEditor> preup_;
-	One<TunnelCommandEditor> postup_;
-	One<TunnelCommandEditor> predown_;
-	One<TunnelCommandEditor> postdown_;
 
 	Id uuid_{};
 };
